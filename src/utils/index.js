@@ -32,6 +32,7 @@ export function camelCase(str) {
   return str.replace(/-[a-z]/g, str1 => str1.substr(-1).toUpperCase())
 }
 
+//数字类型字符串
 export function isNumberStr(str) {
   return /^[+-]?(0|([1-9]\d*))(\.\d+)?$/g.test(str)
 }

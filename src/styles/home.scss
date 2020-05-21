@@ -1,5 +1,4 @@
-$selectedColor: #f6f7ff;
-$lighterBlue: #409EFF;
+@import './gloal-config';
 
 .container {
   position: relative;
@@ -84,11 +83,12 @@ $lighterBlue: #409EFF;
   font-size: 18px;
   color: #ccb1ea;
   letter-spacing: 4px;
+  user-select: none;
 }
 .action-bar{
   position: relative;
   height: 42px;
-  text-align: right;
+  //text-align: right;
   padding: 0 15px;
   box-sizing: border-box;;
   border: 1px solid #f1e8e8;
@@ -199,9 +199,11 @@ $lighterBlue: #409EFF;
   border-radius: 3px;
   padding: 0 2px;
   margin-bottom: 15px;
+
   .drawing-row-item {
     margin-bottom: 2px;
   }
+
   .el-col{
     margin-top: 22px;
   }

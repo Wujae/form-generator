@@ -1,10 +1,9 @@
-
 <template>
   <div class="container">
     <div class="left-board">
       <div class="logo-wrapper">
         <div class="logo">
-          <img :src="logo" alt="logo"> Form Generator
+          <img :src="logo" alt="logo"> JETS Form Generator
           <a class="github" href="https://github.com/JakHuang/form-generator" target="_blank">
             <img src="https://github.githubassets.com/pinned-octocat.svg" alt>
           </a>
@@ -12,10 +11,10 @@
       </div>
       <el-scrollbar class="left-scrollbar">
         <div class="components-list">
-          <div v-for="(item, listIndex) in leftComponents" :key="listIndex">
+          <div v-if="!item.invisible" v-for="(item, listIndex) in leftComponents" :key="listIndex">
             <div class="components-title">
               <svg-icon icon-class="component" />
-              {{ item.title }}
+              {{ item.name }}
             </div>
             <draggable
               class="components-draggable"
@@ -91,12 +90,7 @@
       </el-scrollbar>
     </div>
 
-    <right-panel
-      :active-data="activeData"
-      :form-conf="formConf"
-      :show-field="!!drawingList.length"
-      @tag-change="tagChange"
-    />
+    <right-panel-neo :active-data="activeData" :form-conf="formConf"/>
 
     <form-drawer
       :visible.sync="drawerVisible"
@@ -129,9 +123,8 @@ import render from '@/components/render/render'
 import FormDrawer from './FormDrawer'
 import JsonDrawer from './JsonDrawer'
 import RightPanel from './RightPanel'
-import {
-  inputComponents, selectComponents, layoutComponents, formConf
-} from '@/components/generator/config'
+import RightPanelNeo from './RightPanelNeo'
+import { componentSections, formConf } from '@/components/generator/config'
 import {
   exportDefault, beautifierConf, isNumberStr, titleCase
 } from '@/utils/index'
@@ -159,6 +152,7 @@ const idGlobal = getIdGlobal()
 
 export default {
   components: {
+    RightPanelNeo,
     draggable,
     render,
     FormDrawer,
@@ -172,9 +166,6 @@ export default {
       logo,
       idGlobal,
       formConf,
-      inputComponents,
-      selectComponents,
-      layoutComponents,
       labelWidth: 100,
       drawingList: drawingDefalut,
       drawingData: {},
@@ -188,20 +179,7 @@ export default {
       activeData: drawingDefalut[0],
       saveDrawingListDebounce: debounce(340, saveDrawingList),
       saveIdGlobalDebounce: debounce(340, saveIdGlobal),
-      leftComponents: [
-        {
-          title: '输入型组件',
-          list: inputComponents
-        },
-        {
-          title: '选择型组件',
-          list: selectComponents
-        },
-        {
-          title: '布局型组件',
-          list: layoutComponents
-        }
-      ]
+      leftComponents: componentSections
     }
   },
   computed: {
@@ -267,7 +245,9 @@ export default {
     })
   },
   methods: {
+    //切换激活对象
     activeFormItem(element) {
+      console.log('current active item', element.__config__.formId, element)
       this.activeData = element
       this.activeId = element.__config__.formId
     },
@@ -283,6 +263,8 @@ export default {
       this.activeFormItem(clone)
     },
     cloneComponent(origin) {
+      console.log('clone component', origin)
+
       const clone = JSON.parse(JSON.stringify(origin))
       const config = clone.__config__
       config.formId = ++this.idGlobal
@@ -294,6 +276,20 @@ export default {
       } else if (config.layout === 'rowFormItem') {
         config.componentName = `row${this.idGlobal}`
         config.gutter = this.formConf.gutter
+      } else if (config.layout === 'cardItem') {
+        config.componentName = `card${this.idGlobal}`
+        config.gutter = this.formConf.gutter
+      } else if (config.layout === 'tabItem') {
+        config.componentName = `tab${this.idGlobal}`
+      } else if (config.layout === 'form') {
+        //根据 type 确定是否给予 model, 布局组件不绑定 model
+        clone.__vModel__  = `field${this.idGlobal}`
+        clone.placeholder !== undefined && (clone.placeholder += config.label)
+        config.componentName = config.idf + this.idGlobal
+
+      } else if (config.layout === 'layout') {
+
+        config.componentName = config.idf + this.idGlobal
       }
       tempActiveData = clone
       return tempActiveData
@@ -330,6 +326,8 @@ export default {
       )
     },
     drawingItemCopy(item, parent) {
+      console.log("drawing item copy", item, 'to', parent)
+
       let clone = JSON.parse(JSON.stringify(item))
       clone = this.createIdAndKey(clone)
       parent.push(clone)
@@ -340,17 +338,30 @@ export default {
       config.formId = ++this.idGlobal
       config.renderKey = +new Date()
       if (config.layout === 'colFormItem') {
+
         item.__vModel__ = `field${this.idGlobal}`
       } else if (config.layout === 'rowFormItem') {
         config.componentName = `row${this.idGlobal}`
+      } else if (config.layout === 'cardItem') {
+        config.componentName = `card${this.idGlobal}`
+      } else if (config.layout === 'tabItem') {
+        config.componentName = `tab${this.idGlobal}`
+      } else if (config.layout === 'custom') {
+        config.componentName = config.idf + this.idGlobal
+        item.__vModel__  = `field${this.idGlobal}`
+        clone.placeholder !== undefined && (clone.placeholder += config.label)
+
       }
+
       if (Array.isArray(config.children)) {
         config.children = config.children.map(childItem => this.createIdAndKey(childItem))
       }
       return item
     },
     drawingItemDelete(index, parent) {
+      console.log("drawing item delete", index, 'from', JSON.stringify(parent))
       parent.splice(index, 1)
+      console.log(this.drawingList)
       this.$nextTick(() => {
         const len = this.drawingList.length
         if (len) {
@@ -406,6 +417,7 @@ export default {
       this.updateDrawingList(newTag, this.drawingList)
     },
     updateDrawingList(newTag, list) {
+
       const index = list.findIndex(item => item.__config__.formId === this.activeId)
       if (index > -1) {
         list.splice(index, 1, newTag)

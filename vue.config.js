@@ -64,5 +64,9 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
-  }
+
+    console.log(`current mode ${process.env.NODE_ENV}`)
+
+  },
+  lintOnSave: false
 }

@@ -1,3 +1,5 @@
+import componentsLoader from '@/components/loader/ComponentsLoader'
+
 // 表单属性【右面板】
 export const formConf = {
   formRef: 'elForm',
@@ -522,6 +524,32 @@ export const layoutComponents = [
   },
   {
     __config__: {
+      layout: 'tabItem',
+      tagIcon: 'tab',
+      label: 'Tab容器',
+      layoutTree: true,
+      children: []
+    },
+    type: 'default',
+    justify: 'start',
+    align: 'top'
+  },
+  {
+    __config__: {
+      layout: 'cardItem',
+      tag: 'el-card',
+      tagIcon: 'card',
+      label: '卡片',
+      layoutTree: true,
+      children: []
+    },
+    type: 'default',
+    justify: 'start',
+    align: 'top'
+  },
+  {
+    __config__: {
+      layout: 'colFormItem',
       label: '按钮',
       showLabel: true,
       changeTag: true,
@@ -530,7 +558,6 @@ export const layoutComponents = [
       tagIcon: 'button',
       defaultValue: undefined,
       span: 24,
-      layout: 'colFormItem',
       document: 'https://element.eleme.cn/#/zh-CN/component/button'
     },
     __slot__: {
@@ -545,3 +572,10 @@ export const layoutComponents = [
     disabled: false
   }
 ]
+
+// 组件清单【左面板】
+export const componentSections = componentsLoader.componentSections
+
+export const configPanels =  componentsLoader.configPanels
+
+export const customLayouts =  componentsLoader.customLayouts

@@ -28,10 +28,18 @@ export default {
       on: {},
       style: {}
     }
+
+    // console.log("in render start", this.conf)
+
     const confClone = JSON.parse(JSON.stringify(this.conf))
     const children = []
 
+    // console.log("in render confClone", confClone)
+
     const childObjs = componentChild[confClone.__config__.tag]
+
+    // console.log("in render", childObjs)
+
     if (childObjs) {
       Object.keys(childObjs).forEach(key => {
         const childFunc = childObjs[key]
@@ -40,6 +48,8 @@ export default {
         }
       })
     }
+
+    // console.log("in render children", children)
 
     Object.keys(confClone).forEach(key => {
       const val = confClone[key]

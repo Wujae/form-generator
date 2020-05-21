@@ -78,7 +78,46 @@ function colWrapper(scheme, str) {
   return str
 }
 
+//TODO still many to do 通过 结构树 ？ 生成vue code
 const layouts = {
+  form(scheme) {
+    const config = scheme.__config__
+    let labelWidth = ''
+    let label = `label="${config.label}"`
+    if (config.labelWidth && config.labelWidth !== confGlobal.labelWidth) {
+      labelWidth = `label-width="${config.labelWidth}px"`
+    }
+    if (config.showLabel === false) {
+      labelWidth = 'label-width="0"'
+      label = ''
+    }
+    const required = !ruleTrigger[config.tag] && config.required ? 'required' : ''
+    const tagDom = tags[config.tag] ? tags[config.tag](scheme) : null
+    let str = `<el-form-item ${labelWidth} ${label} prop="${scheme.__vModel__}" ${required}>
+        ${tagDom}
+      </el-form-item>`
+    str = colWrapper(scheme, str)
+    return str
+  },
+  layout(scheme) {
+    const config = scheme.__config__
+    let labelWidth = ''
+    let label = `label="${config.label}"`
+    if (config.labelWidth && config.labelWidth !== confGlobal.labelWidth) {
+      labelWidth = `label-width="${config.labelWidth}px"`
+    }
+    if (config.showLabel === false) {
+      labelWidth = 'label-width="0"'
+      label = ''
+    }
+    const required = !ruleTrigger[config.tag] && config.required ? 'required' : ''
+    const tagDom = tags[config.tag] ? tags[config.tag](scheme) : null
+    let str = `<el-form-item ${labelWidth} ${label} prop="${scheme.__vModel__}" ${required}>
+        ${tagDom}
+      </el-form-item>`
+    str = colWrapper(scheme, str)
+    return str
+  },
   colFormItem(scheme) {
     const config = scheme.__config__
     let labelWidth = ''
@@ -99,6 +138,32 @@ const layouts = {
     return str
   },
   rowFormItem(scheme) {
+    const config = scheme.__config__
+    const type = scheme.type === 'default' ? '' : `type="${scheme.type}"`
+    const justify = scheme.type === 'default' ? '' : `justify="${scheme.justify}"`
+    const align = scheme.type === 'default' ? '' : `align="${scheme.align}"`
+    const gutter = scheme.gutter ? `:gutter="${scheme.gutter}"` : ''
+    const children = config.children.map(el => layouts[el.__config__.layout](el))
+    let str = `<el-row ${type} ${justify} ${align} ${gutter}>
+      ${children.join('\n')}
+    </el-row>`
+    str = colWrapper(scheme, str)
+    return str
+  },
+  cardItem(scheme) {
+    const config = scheme.__config__
+    const type = scheme.type === 'default' ? '' : `type="${scheme.type}"`
+    const justify = scheme.type === 'default' ? '' : `justify="${scheme.justify}"`
+    const align = scheme.type === 'default' ? '' : `align="${scheme.align}"`
+    const gutter = scheme.gutter ? `:gutter="${scheme.gutter}"` : ''
+    const children = config.children.map(el => layouts[el.__config__.layout](el))
+    let str = `<el-row ${type} ${justify} ${align} ${gutter}>
+      ${children.join('\n')}
+    </el-row>`
+    str = colWrapper(scheme, str)
+    return str
+  },
+  tabItem(scheme) {
     const config = scheme.__config__
     const type = scheme.type === 'default' ? '' : `type="${scheme.type}"`
     const justify = scheme.type === 'default' ? '' : `justify="${scheme.justify}"`
@@ -385,6 +450,7 @@ export function makeUpHtml(formConfig, type) {
   someSpanIsNot24 = formConfig.fields.some(item => item.__config__.span !== 24)
   // 遍历渲染每个组件成html
   formConfig.fields.forEach(el => {
+
     htmlList.push(layouts[el.__config__.layout](el))
   })
   const htmlStr = htmlList.join('\n')

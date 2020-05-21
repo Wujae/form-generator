@@ -55,7 +55,16 @@
           <el-form-item v-if="activeData.__config__.layout==='rowFormItem'" label="栅格间隔">
             <el-input-number v-model="activeData.gutter" :min="0" placeholder="栅格间隔" />
           </el-form-item>
+          <el-form-item v-if="activeData.__config__.layout==='cardItem'" label="栅格间隔">
+            <el-input-number v-model="activeData.gutter" :min="0" placeholder="栅格间隔" />
+          </el-form-item>
           <el-form-item v-if="activeData.__config__.layout==='rowFormItem'" label="布局模式">
+            <el-radio-group v-model="activeData.type">
+              <el-radio-button label="default" />
+              <el-radio-button label="flex" />
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item v-if="activeData.__config__.layout==='cardItem'" label="布局模式">
             <el-radio-group v-model="activeData.type">
               <el-radio-button label="default" />
               <el-radio-button label="flex" />
@@ -609,7 +618,7 @@
 </template>
 
 <script>
-import { isArray } from 'util'
+
 import TreeNodeDialog from '@/views/index/TreeNodeDialog'
 import { isNumberStr } from '@/utils/index'
 import IconsDialog from './IconsDialog'
@@ -850,7 +859,7 @@ export default {
       return val
     },
     onDefaultValueInput(str) {
-      if (isArray(this.activeData.__config__.defaultValue)) {
+      if (Array.isArray(this.activeData.__config__.defaultValue)) {
         // 数组
         this.$set(
           this.activeData.__config__,
@@ -930,9 +939,10 @@ export default {
 
 <style lang="scss" scoped>
 .right-board {
+  background-color: white;
   width: 350px;
   position: absolute;
-  right: 0;
+  right: 350px;
   top: 0;
   padding-top: 3px;
   .field-box {
