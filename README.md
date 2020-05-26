@@ -54,8 +54,5 @@ npm run build
 ## 交流
 - QQ 408917731
 
-## 捐赠
-#### 也请您在捐赠后，加下qq：408917731，私聊群主留个赞助链接。
-
 ## 开源协议
 [MIT](https://opensource.org/licenses/MIT)
