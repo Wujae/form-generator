@@ -1,4 +1,5 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * 滑块组件
@@ -11,7 +12,7 @@ const config = {
   __config__: {
     idf: 'f_slider',
     layout: 'form',
-    label: '滑块C',
+    label: '滑块',
     tag: 'el-slider',
     tagIcon: 'slider',
     defaultValue: null,
@@ -20,8 +21,7 @@ const config = {
     labelWidth: null,
     required: true,
     regList: [],
-    changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/slider'
+    changeTag: true
   },
   disabled: false,
   min: 0,
@@ -44,5 +44,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

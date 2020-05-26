@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '@/views/index/Home.vue'
-import Parser from '@/components/parser/example/Index.vue'
+import Home from '@/views/index/Home'
+import Parser from '@/components/parser/example/Index'
 
 Vue.use(VueRouter)
 

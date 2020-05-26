@@ -1,4 +1,5 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * checkbox 多选组件
@@ -11,7 +12,7 @@ const config = {
   __config__: {
     idf: 'f_checkbox',
     layout: 'form',
-    label: '多选框组C',
+    label: '多选框组',
     tag: 'el-checkbox-group',
     tagIcon: 'checkbox',
     defaultValue: [],
@@ -23,7 +24,6 @@ const config = {
     regList: [],
     changeTag: true,
     border: false,
-    document: 'https://element.eleme.cn/#/zh-CN/component/checkbox'
   },
   __slot__: {
     options: [{
@@ -54,5 +54,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

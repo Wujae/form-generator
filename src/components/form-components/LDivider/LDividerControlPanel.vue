@@ -14,7 +14,6 @@
       <el-form-item v-if="activeData.__config__.span!==undefined" label="表单栅格">
         <el-slider v-model="activeData.__config__.span" :max="24" :min="1" :marks="{12:''}" @change="spanChange"/>
       </el-form-item>
-      {{activeData['content-position']}}
       <el-form-item v-if="activeData['content-position']!==undefined" label="标签位置">
         <el-radio-group v-model="activeData['content-position']" style="margin-bottom: 30px;">
           <el-radio-button label="left">左</el-radio-button>

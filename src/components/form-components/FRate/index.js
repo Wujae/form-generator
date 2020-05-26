@@ -1,4 +1,5 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * 评分组件
@@ -14,14 +15,13 @@ const config = {
     label: '评分',
     tag: 'el-rate',
     tagIcon: 'rate',
-    defaultValue: 0,
+    defaultValue: '0',
     span: 24,
     showLabel: true,
     labelWidth: null,
     required: true,
     regList: [],
     changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/rate'
   },
   style: {},
   max: 5,
@@ -44,5 +44,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

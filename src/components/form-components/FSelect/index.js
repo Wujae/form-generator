@@ -1,5 +1,6 @@
 import renders from '@/components/render/render'
 import controlPanel from './FSelectControlPanel'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * 下拉组件
@@ -11,7 +12,7 @@ const config = {
   __c_panel: 'FSelectControlPanel',
   __config__: {
     idf: 'f_select',
-    label: '下拉选择C',
+    label: '下拉选择',
     layout: 'form',
     showLabel: true,
     labelWidth: null,
@@ -22,15 +23,14 @@ const config = {
     required: true,
     regList: [],
     changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/select'
   },
   __slot__: {
     options: [{
       label: '选项一',
-      value: 1
+      value: '1'
     }, {
       label: '选项二',
-      value: 2
+      value: '2'
     }]
   },
   placeholder: '请选择',
@@ -80,5 +80,6 @@ export default {
   controlPanel: controlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }

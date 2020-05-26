@@ -1,5 +1,7 @@
+import generator from './LRowCodeGenerator'
+
 /**
- * 评分组件
+ * 行容器组件
  */
 
 //基本信息
@@ -12,7 +14,6 @@ const config = {
     tagIcon: 'row',
     label: '行容器',
     layoutTree: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/layout'
   },
   children: [],
   type: 'default',
@@ -31,6 +32,8 @@ function render(h, element, index, parent, container) {
   const { activeItem } = this.$listeners
   const config = element.__config__
 
+  console.log('in l_row render', this, element)
+
   const className = this.activeId === config.formId
     ? 'drawing-row-item active-from-item'
     : 'drawing-row-item'
@@ -45,7 +48,7 @@ function render(h, element, index, parent, container) {
       <el-row gutter={config.gutter} class={className}
               nativeOnClick={event => { activeItem(element); event.stopPropagation() }}>
         <span class="component-name">{config.componentName}</span>
-        <draggable list={config.children} animation={340} group="componentsGroup" class="drag-wrapper">
+        <draggable list={element.children} animation={340} group="componentsGroup" class="drag-wrapper">
           {child}
         </draggable>
         {container.widget.itemBtns.apply(this, arguments)}
@@ -56,11 +59,12 @@ function render(h, element, index, parent, container) {
 
 export default {
   idf: 'l_row',
-  describe: '评分组件',
+  describe: '行容器组件',
   type: 'layout',
   idx: 1,
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

@@ -1,5 +1,6 @@
 import renders from '@/components/render/render'
 import controlPanel from './FTextAreaControlPanel'
+import generator from '../base/CommonFormComponentGenerator'
 
 
 /**
@@ -45,7 +46,7 @@ const property = {
 // 组件渲染函数
 function render(h, element, index, parent, container) {
 
-  console.log("textarea render", this, parent)
+  // console.log("textarea render", this, parent)
 
   const { activeItem } = this.$listeners
   const config = element.__config__
@@ -76,5 +77,6 @@ export default {
   controlPanel: controlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }

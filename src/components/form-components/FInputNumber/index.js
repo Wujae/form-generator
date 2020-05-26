@@ -1,5 +1,6 @@
 import renders from '@/components/render/render'
 import controlPanel from './FInputNumberControlPanel'
+import generator from '../base/CommonFormComponentGenerator'
 
 
 /**
@@ -13,7 +14,7 @@ const config = {
   __c_panel: 'FInputNumberControlPanel',
   __config__: {
     idf: 'f_input_number',
-    label: '计数器C',
+    label: '计数器',
     layout: 'form',
     showLabel: true,
     changeTag: true,
@@ -74,5 +75,6 @@ export default {
   controlPanel: controlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }

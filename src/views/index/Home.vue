@@ -4,7 +4,7 @@
       <div class="logo-wrapper">
         <div class="logo">
           <img :src="logo" alt="logo"> JETS Form Generator
-          <a class="github" href="https://github.com/JakHuang/form-generator" target="_blank">
+          <a class="github" href="https://github.com/Wujae/form-generator" target="_blank">
             <img src="https://github.githubassets.com/pinned-octocat.svg" alt>
           </a>
         </div>
@@ -122,7 +122,6 @@ import ClipboardJS from 'clipboard'
 import render from '@/components/render/render'
 import FormDrawer from './FormDrawer'
 import JsonDrawer from './JsonDrawer'
-import RightPanel from './RightPanel'
 import RightPanelNeo from './RightPanelNeo'
 import { componentSections, formConf } from '@/components/generator/config'
 import {
@@ -157,7 +156,6 @@ export default {
     render,
     FormDrawer,
     JsonDrawer,
-    RightPanel,
     CodeTypeDialog,
     DraggableItem
   },
@@ -247,7 +245,7 @@ export default {
   methods: {
     //切换激活对象
     activeFormItem(element) {
-      console.log('current active item', element.__config__.formId, element)
+      // console.log('current active item', element.__config__.formId, element)
       this.activeData = element
       this.activeId = element.__config__.formId
     },
@@ -263,27 +261,17 @@ export default {
       this.activeFormItem(clone)
     },
     cloneComponent(origin) {
-      console.log('clone component', origin)
+      // console.log('clone component', origin)
 
       const clone = JSON.parse(JSON.stringify(origin))
       const config = clone.__config__
       config.formId = ++this.idGlobal
       config.span = this.formConf.span
       config.renderKey = +new Date() // 改变renderKey后可以实现强制更新组件
-      if (config.layout === 'colFormItem') {
-        clone.__vModel__ = `field${this.idGlobal}`
-        clone.placeholder !== undefined && (clone.placeholder += config.label)
-      } else if (config.layout === 'rowFormItem') {
-        config.componentName = `row${this.idGlobal}`
-        config.gutter = this.formConf.gutter
-      } else if (config.layout === 'cardItem') {
-        config.componentName = `card${this.idGlobal}`
-        config.gutter = this.formConf.gutter
-      } else if (config.layout === 'tabItem') {
-        config.componentName = `tab${this.idGlobal}`
-      } else if (config.layout === 'form') {
+      if (config.layout === 'form') {
         //根据 type 确定是否给予 model, 布局组件不绑定 model
-        clone.__vModel__  = `field${this.idGlobal}`
+        //子表单字段名前缀form
+        clone.__vModel__  = `${config.subForm ? config.subForm: 'field'}${this.idGlobal}`
         clone.placeholder !== undefined && (clone.placeholder += config.label)
         config.componentName = config.idf + this.idGlobal
 
@@ -326,7 +314,7 @@ export default {
       )
     },
     drawingItemCopy(item, parent) {
-      console.log("drawing item copy", item, 'to', parent)
+      // console.log("drawing item copy", item, 'to', parent)
 
       let clone = JSON.parse(JSON.stringify(item))
       clone = this.createIdAndKey(clone)
@@ -337,20 +325,16 @@ export default {
       const config = item.__config__
       config.formId = ++this.idGlobal
       config.renderKey = +new Date()
-      if (config.layout === 'colFormItem') {
 
-        item.__vModel__ = `field${this.idGlobal}`
-      } else if (config.layout === 'rowFormItem') {
-        config.componentName = `row${this.idGlobal}`
-      } else if (config.layout === 'cardItem') {
-        config.componentName = `card${this.idGlobal}`
-      } else if (config.layout === 'tabItem') {
-        config.componentName = `tab${this.idGlobal}`
-      } else if (config.layout === 'custom') {
+      if (config.layout === 'form') {
+        //根据 type 确定是否给予 model, 布局组件不绑定 model
+        config.__vModel__  = `field${this.idGlobal}`
+        config.placeholder !== undefined && (clone.placeholder += config.label)
         config.componentName = config.idf + this.idGlobal
-        item.__vModel__  = `field${this.idGlobal}`
-        clone.placeholder !== undefined && (clone.placeholder += config.label)
 
+      } else if (config.layout === 'layout') {
+
+        config.componentName = config.idf + this.idGlobal
       }
 
       if (Array.isArray(config.children)) {
@@ -359,9 +343,10 @@ export default {
       return item
     },
     drawingItemDelete(index, parent) {
-      console.log("drawing item delete", index, 'from', JSON.stringify(parent))
+      // console.log("drawing item delete", index, 'from', parent)
+
       parent.splice(index, 1)
-      console.log(this.drawingList)
+
       this.$nextTick(() => {
         const len = this.drawingList.length
         if (len) {

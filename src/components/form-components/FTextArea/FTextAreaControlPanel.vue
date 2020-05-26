@@ -31,14 +31,14 @@
       </el-form-item>
       <el-form-item v-if="activeData.__vModel__!==undefined" label="默认值">
         <el-input :value="setDefaultValue(activeData.__config__.defaultValue)"
-          placeholder="请输入默认值" @input="onDefaultValueInput"/>
+                  placeholder="请输入默认值" @input="onDefaultValueInput"/>
       </el-form-item>
 
       <el-form-item v-if="activeData.autosize !== undefined" label="最小行数">
-        <el-input-number v-model="activeData.autosize.minRows" :min="1" placeholder="最小行数" />
+        <el-input-number v-model="activeData.autosize.minRows" :min="1" placeholder="最小行数"/>
       </el-form-item>
       <el-form-item v-if="activeData.autosize !== undefined" label="最大行数">
-        <el-input-number v-model="activeData.autosize.maxRows" :min="1" placeholder="最大行数" />
+        <el-input-number v-model="activeData.autosize.maxRows" :min="1" placeholder="最大行数"/>
       </el-form-item>
 
       <el-form-item v-if="activeData.maxlength !== undefined" label="最多输入">
@@ -99,55 +99,28 @@
 
 <script>
 
-  import { isNumberStr } from '@/utils/index'
-
   /**
    * 组件配置模版
    */
   export default {
     name: "FTextAreaControlPanel",
     props: ['activeData', 'formConf'],
-    components: {
-
-    },
+    components: {},
     data() {
       return {}
     },
     created() {
-      console.log('in f_text control panel', this);
+      // console.log('in f_text control panel', this);
     },
     methods: {
       setDefaultValue(val) {
-        if (Array.isArray(val)) {
-          return val.join(',')
-        }
-        // if (['string', 'number'].indexOf(typeof val) > -1) {
-        //   return val
-        // }
-        if (typeof val === 'boolean') {
-          return `${val}`
-        }
         return val
       },
       onDefaultValueInput(str) {
-        if (Array.isArray(this.activeData.__config__.defaultValue)) {
-          // 数组
-          this.$set(
-            this.activeData.__config__,
-            'defaultValue',
-            str.split(',').map(val => (isNumberStr(val) ? +val : val))
-          )
-        } else if (['true', 'false'].indexOf(str) > -1) {
-          // 布尔
-          this.$set(this.activeData.__config__, 'defaultValue', JSON.parse(str))
-        } else {
-          // 字符串和数字
-          this.$set(
-            this.activeData.__config__,
-            'defaultValue',
-            isNumberStr(str) ? +str : str
-          )
-        }
+
+        // 字符串和数字
+        this.$set(this.activeData.__config__, 'defaultValue', str)
+
       },
       addReg() {
         this.activeData.__config__.regList.push({

@@ -11,7 +11,7 @@ export default {
       </el-row>
     }
 
-    conf.__slot__['el-tab-pane'].forEach(item => {
+    conf.children.forEach(item => {
 
       list.push(
         <el-tab-pane label={item.label} value={item.value} disabled={item.disabled}>

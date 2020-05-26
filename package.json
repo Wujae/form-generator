@@ -1,6 +1,6 @@
 {
-  "name": "form-generator",
-  "version": "0.2.0",
+  "name": "JETS-form-generator",
+  "version": "0.5.1",
   "private": true,
   "scripts": {
     "build": "vue-cli-service build",

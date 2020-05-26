@@ -1,5 +1,5 @@
 import renders from '@/components/render/render'
-//import FInputControlPanel from './FInputControlPanel'
+import generator from '../base/CommonFormComponentGenerator'
 
 
 /**
@@ -15,7 +15,7 @@ const config = {
   __config__: {
     idf: 'f_tinymce',
     layout: 'form',
-    label: '编辑器C',
+    label: '编辑器',
     showLabel: true,
     changeTag: true,
     labelWidth: null,
@@ -25,7 +25,6 @@ const config = {
     span: 24,
     required: true,
     regList: [],
-    document: 'http://tinymce.ax-z.cn'
   },
   height: 300, // 编辑器高度
   branding: false // 隐藏右下角品牌烙印
@@ -70,5 +69,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

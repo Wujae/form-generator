@@ -1,5 +1,6 @@
 import draggable from 'vuedraggable'
 import controlPanel from './LTabsControlPanel'
+import generator from './LTabsCodeGenerator'
 
 //Tab组件
 
@@ -10,23 +11,26 @@ const config =   {
     tag: 'el-tabs',
     layout: 'layout',
     tagIcon: 'tab',
-    label: 'Tab容器C',
+    label: 'Tab容器',
     layoutTree: true,
   },
-  __slot__: { //Tab 插槽
-    'el-tab-pane': [{
+  children:[{
+      tag: 'el-tab-pane',
       label: '选项卡1',
       value: 'tab1',
       children: []
     }, {
+      tag: 'el-tab-pane',
       label: '选项卡2',
       value: 'tab2',
       children: []
-    }]
-  },
+  }],
   justify: 'start',
   align: 'top',
-  tabPosition: 'top'
+  tabPosition: 'top',
+  type: 'border-card',
+  stretch: false,
+  'class': ['layout-tabs'],   //自定义class
 }
 
 const property = {
@@ -49,7 +53,9 @@ function render(h, element, index, parent, container) {
 
   return (
     <el-col span={config.span} class={className} nativeOnClick={event => { activeItem(element); event.stopPropagation() }}>
+      <el-form-item label-width="0">
       {tabs}
+      </el-form-item>
       {container.widget.itemBtns.apply(this, arguments)}
     </el-col>
   )
@@ -91,16 +97,16 @@ function renderTabs(h, conf, container) {
 function renderTabPane(h, conf, container) {
   const list = []
 
-  // console.log('in elTabPane', conf, container)
+   console.log('in render el-tab-pane', conf, container)
 
-  conf.__slot__['el-tab-pane'].forEach((item, i) => {
+  conf.children.forEach((item, i) => {
 
-    // console.log('in elTabPane ele', item)
+    //console.log('in render el-tab-pane pane', item)
 
-    let child = container.renderChildrenDirect.call(this, h, item, i, item.children)
+    let child = container.renderChildren.call(this, h, item, i, item.children)
 
     if (conf.type === 'flex') {
-      child = <el-row type={element.type} justify={element.justify} align={element.align}>
+      child = <el-row type={conf.type} justify={conf.justify} align={conf.align}>
         {child}
       </el-row>
     }
@@ -108,7 +114,7 @@ function renderTabPane(h, conf, container) {
     list.push(
       <el-tab-pane label={item.label} value={item.value} disabled={item.disabled}>
         <el-row gutter={conf.gutter} class='drawing-row-item'>
-          <span class="component-name">{item.label}</span>
+          <span class="component-name">{item.value}</span>
           <draggable list={item.children} animation={340} group="componentsGroup" class="drag-wrapper">
             {child}
           </draggable>
@@ -136,5 +142,6 @@ export default {
   controlPanel: controlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }

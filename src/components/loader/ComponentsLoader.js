@@ -3,7 +3,6 @@
  * 自动扫描 src/components/form-components包内的组件定义， 组件定义统一按包独立存放，以index.js作为输出
  *
  */
-import {isNumberStr} from "../../utils";
 
 const modulesFiles = require.context("@/components/form-components/", true, /index\.js$/);
 
@@ -36,7 +35,7 @@ const SECTIONS = [
 
 
 
-let componentSections = SECTIONS, configPanels = [], customLayouts = {}
+let componentSections = SECTIONS, configPanels = [], customLayouts = {}, generators = {}
 
 const sectionsLookUp = SECTIONS.reduce((p, c) => {
   p.push(c.code)
@@ -76,15 +75,19 @@ try {
         }else{
           componentSections[validComponentType(cd.type)].list.push(cd.config)
         }
-
       }
 
       if(cd.controlPanel) configPanels = configPanels.concat(cd.controlPanel)
 
+      // 组件渲染器
       if(cd.idf && cd.render && typeof cd.render === 'function') {
         customLayouts[cd.idf] = cd.render
       }
 
+      // 组件代码生成器
+      if(cd.idf && cd.generator && typeof  cd.generator === 'function'){
+        generators[cd.idf] = cd.generator
+      }
     }
 
   });
@@ -96,5 +99,6 @@ try {
 export default {
   componentSections,
   configPanels,
-  customLayouts
+  customLayouts,
+  generators
 }

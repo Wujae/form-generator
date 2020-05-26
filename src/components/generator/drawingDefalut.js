@@ -1,6 +1,10 @@
 export default [
   {
+    __c_panel: 'FInputControlPanel', //组件控制面板 申明式指定
     __config__: {
+      formId: 99,
+      idf: 'f_input',
+      layout: 'form',
       label: '单行文本',
       labelWidth: null,
       showLabel: true,
@@ -9,7 +13,6 @@ export default [
       tagIcon: 'input',
       defaultValue: undefined,
       required: true,
-      layout: 'colFormItem',
       span: 24,
       document: 'https://element.eleme.cn/#/zh-CN/component/input',
       // 正则校验规则

@@ -134,7 +134,7 @@
       }
     },
     created() {
-      console.log('in f_input_number control panel', this);
+      // console.log('in f_input_number control panel', this);
     },
     methods: {
       setDefaultValue(val) {

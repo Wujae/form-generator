@@ -42,8 +42,7 @@
     },
     created(){
 
-      console.log("dynamic init control panels")
-      console.log(configPanels)
+      console.log("dynamic init control panels", configPanels)
 
       //动态初始化component
       if(configPanels && Array.isArray(configPanels)){

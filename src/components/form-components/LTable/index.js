@@ -1,7 +1,14 @@
 import controlPanel from './LTableControlPanel'
 import tableWrapper from './TableWrapper'
+import tableHeader from './TableHeader'
+import generator from './LTableCodeGenerator'
 
+
+// 装载 table wrapper 组件
 Vue.component(tableWrapper.name, tableWrapper)
+
+// 装载 table header 组件
+Vue.component(tableHeader.name, tableHeader)
 
 /**
  * TODO
@@ -15,10 +22,11 @@ const config = {
   __c_panel: 'LTableControlPanel',
   __config__: {
     idf: 'f_table',
-    layout: 'layout',
+    layout: 'form',
+    subForm: 'table', //子表单属性 'table'
     label: '子表单',
-    tag: 'el-slider',
-    tagIcon: 'slider',
+    tag: 'el-table',
+    tagIcon: 'row',
     defaultValue: null,
     span: 24,
     showLabel: true,
@@ -29,11 +37,16 @@ const config = {
   },
   __slot__: {
     'buttons': [
-      {type: 'primary', label: '添加', icon: "el-icon-plus"},
-      {type: 'primary', label: '删除', icon: "el-icon-close"}
+      {key:'add', position:'header', type: 'primary', label: '添加', icon: "el-icon-plus", buildIn: true},
+      {key:'delete', position:'all', type: 'danger', label: '删除', icon: "el-icon-close", buildIn: true}
     ]
   },
-  children: []
+  children: [],
+  'class': ['layout-table'],
+  'header-row-class-name': ['layout-table-header-row'],
+  'row-class-name': ['layout-table-row'],
+  showIndex: false,
+  selection: true
 }
 
 //组件属性
@@ -42,7 +55,7 @@ const property = {}
 // 组件渲染函数
 function render(h, element, index, parent, container) {
 
-  console.log("table render", this)
+  // console.log("table render", this)
 
   const {activeItem} = this.$listeners
   const config = element.__config__
@@ -62,12 +75,11 @@ function render(h, element, index, parent, container) {
    */
   return (
     <el-col span={config.span} class={className}>
-      <el-form-item label-width={labelWidth} label={config.showLabel ? config.label : ''} required={config.required}
-                    nativeOnClick={event => {activeItem(element); event.stopPropagation() }}>
+      <el-form-item label-width='0' nativeOnClick={event => {activeItem(element); event.stopPropagation() }}>
+        <table-header class="layout-table-label" conf={element}/>
         <el-row gutter={config.gutter} class='drawing-row-item' >
           <table-wrapper activeId={this.activeId} cols={element.children} widget={container.widget} formConf={this.formConf} container={this} />
         </el-row>
-
       </el-form-item>
       {container.widget.itemBtns.apply(this, arguments)}
     </el-col>
@@ -82,6 +94,7 @@ export default {
   controlPanel: controlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }
 

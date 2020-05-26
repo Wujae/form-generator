@@ -1,4 +1,5 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * 日期选择组件
@@ -11,7 +12,7 @@ const config = {
   __config__: {
     idf: 'f_date_picker',
     layout: 'form',
-    label: '日期选择C',
+    label: '日期选择',
     tag: 'el-date-picker',
     tagIcon: 'date',
     defaultValue: null,
@@ -21,7 +22,6 @@ const config = {
     required: true,
     regList: [],
     changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/date-picker'
   },
   placeholder: '请选择',
   type: 'date',
@@ -46,5 +46,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

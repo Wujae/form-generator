@@ -1,4 +1,5 @@
 import controlPanel from './SHtmlControlPanel'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * TODO
@@ -17,7 +18,6 @@ const config =   {
     tag: 'div',
     tagIcon: 'textarea',
     defaultValue: '演示文本',
-    required: true,
     span: 24,
     regList: [],
     changeTag: true,
@@ -42,7 +42,7 @@ const property = {
 // 组件渲染函数
 function render(h, element, index, parent, container) {
 
-  console.log("textarea render", this, parent)
+  // console.log("html render", this, parent)
 
   const { activeItem } = this.$listeners
   const config = element.__config__
@@ -70,5 +70,6 @@ export default {
   controlPanel: controlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }

@@ -14,7 +14,9 @@
       <el-form-item v-if="activeData.placeholder!==undefined" label="占位提示">
         <el-input v-model="activeData.placeholder" placeholder="请输入占位提示"/>
       </el-form-item>
-
+      <el-form-item v-if="activeData.__config__.span!==undefined" label="表单栅格">
+        <el-slider v-model="activeData.__config__.span" :max="24" :min="1" :marks="{12:''}" @change="spanChange" />
+      </el-form-item>
       <el-form-item v-if="activeData.__config__.labelWidth!==undefined" label="标签宽度">
         <el-input v-model.number="activeData.__config__.labelWidth" type="number" placeholder="请输入标签宽度"/>
       </el-form-item>
@@ -76,8 +78,6 @@
 
 <script>
 
-  import { isNumberStr } from '@/utils/index'
-
   export default {
     name: "FSelectControlPanel",
     props: ['activeData', 'formConf'],
@@ -92,7 +92,7 @@
     },
     computed: {},
     created() {
-      console.log('in f_select control panel', this);
+      // console.log('in f_select control panel', this);
     },
     methods: {
       setDefaultValue(val) {
@@ -110,25 +110,16 @@
       onDefaultValueInput(str) {
         if (Array.isArray(this.activeData.__config__.defaultValue)) {
           // 数组
-          this.$set(
-            this.activeData.__config__,
-            'defaultValue',
-            str.split(',').map(val => (isNumberStr(val) ? +val : val))
-          )
+          this.$set(this.activeData.__config__, 'defaultValue', str.split(','))
         } else if (['true', 'false'].indexOf(str) > -1) {
           // 布尔
           this.$set(this.activeData.__config__, 'defaultValue', JSON.parse(str))
         } else {
           // 字符串和数字
-          this.$set(
-            this.activeData.__config__,
-            'defaultValue',
-            isNumberStr(str) ? +str : str
-          )
-        }
+          this.$set(this.activeData.__config__, 'defaultValue', str)}
       },
       setOptionValue(item, val) {
-        item.value = isNumberStr(val) ? +val : val
+        item.value = val
       },
       addSelectItem() {
         this.activeData.__slot__.options.push({

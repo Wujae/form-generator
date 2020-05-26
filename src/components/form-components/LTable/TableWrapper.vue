@@ -40,20 +40,19 @@
 
       let colWrappers = [];
 
-      console.log('in table wrapper mounted', this, this.activeId, this.cols, this.formConf, this.widget)
+      // console.log('in table wrapper rendering', this, this.activeId, this.cols, this.formConf, this.widget)
 
 
       if (this.cols && Array.isArray(this.cols)) {
 
         colWrappers = this.cols.map((col, i) => {
+          console.log('in table wrapper rendering col', this.activeId, col.__config__.formId)
 
-          let className = this.activeId === col.formId ? 'drawing-col-item active-from-item' : 'drawing-col-item'
+          let className = this.activeId === col.__config__.formId ? 'drawing-col-item active-from-item' : 'drawing-col-item'
           if (this.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
 
           return (
-            <div class={className} onClick={event => {
-              activeItem(col); event.stopPropagation()
-            }}>
+            <div class={className} onClick={event => {activeItem(col); event.stopPropagation()}}>
               <col-wrapper element={col} activeId={this.activeId} formConf={this.formConf}/>
               {this.widget.itemBtns.call(this.container, h, col, i, this.cols, true)}
             </div>
@@ -118,19 +117,20 @@
       text-align: center;
       border-radius: 50%;
       font-size: 12px;
-      border: 1px solid;
       cursor: pointer;
       z-index: 1;
-    }
-    & > .drawing-item-delete{
       right: 12px;
-      border-color: #F56C6C;
+      border: 1px solid #F56C6C;
       color: #F56C6C;
       background: #fff;
       &:hover{
         background: #F56C6C;
         color: #fff;
       }
+    }
+
+    & > .drawing-item-copy {
+      display: none !important;
     }
   }
 

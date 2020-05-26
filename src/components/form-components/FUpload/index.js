@@ -1,4 +1,6 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
+
 
 /**
  * 上传组件组件
@@ -25,7 +27,6 @@ const config = {
     changeTag: true,
     fileSize: 2,
     sizeUnit: 'MB',
-    document: 'https://element.eleme.cn/#/zh-CN/component/upload'
   },
   __slot__: {
     'list-type': true
@@ -48,9 +49,10 @@ export default {
   idf: 'f_upload',
   describe: '上传组件',
   type: 'select',
-  idx: 1,
+  idx: 99,
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

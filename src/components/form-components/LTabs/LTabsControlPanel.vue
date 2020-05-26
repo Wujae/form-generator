@@ -13,6 +13,14 @@
         <el-slider v-model="activeData.__config__.span" :max="24" :min="1" :marks="{12:''}" @change="spanChange"/>
       </el-form-item>
 
+      <el-form-item v-if="activeData.type!==undefined" label="风格类型">
+        <el-radio-group v-model="activeData.type" style="margin-bottom: 30px;">
+          <el-radio-button label="default">默认</el-radio-button>
+          <el-radio-button label="card">选项卡</el-radio-button>
+          <el-radio-button label="border-card">卡片</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+
       <el-form-item v-if="activeData.tabPosition!==undefined" label="标签位置">
         <el-radio-group v-model="activeData.tabPosition" style="margin-bottom: 30px;">
           <el-radio-button label="top">上</el-radio-button>
@@ -22,15 +30,19 @@
         </el-radio-group>
       </el-form-item>
 
+      <el-form-item v-if="activeData.stretch !== undefined" label="标签自撑开">
+        <el-switch v-model="activeData.stretch" />
+      </el-form-item>
+
       <el-divider>选项</el-divider>
-      <draggable :list="activeData.__slot__['el-tab-pane']" :animation="340" group="selectItem" handle=".option-drag">
-        <div v-for="(item, index) in activeData.__slot__['el-tab-pane']" :key="index" class="select-item">
+      <draggable :list="activeData.children" :animation="340" group="selectItem" handle=".option-drag">
+        <div v-for="(item, index) in activeData.children" :key="index" class="select-item">
           <div class="select-line-icon option-drag">
             <i class="el-icon-s-operation"/>
           </div>
           <el-input v-model="item.label" placeholder="选项名" size="small"/>
           <el-input placeholder="选项值" size="small" :value="item.value" @input="setOptionValue(item, $event)"/>
-          <div class="close-btn select-line-icon" @click="activeData.__slot__['el-tab-pane'].splice(index, 1)">
+          <div class="close-btn select-line-icon" @click="activeData.children.splice(index, 1)">
             <i class="el-icon-remove-outline"/>
           </div>
         </div>
@@ -70,9 +82,11 @@
       },
       addSelectItem() {
 
-        this.activeData.__slot__['el-tab-pane'].push({
+        this.activeData.children.push({
+          tag: 'el-tab-pane',
           label: '',
-          value: ''
+          value: '',
+          children: []
         })
       },
       spanChange(val) {

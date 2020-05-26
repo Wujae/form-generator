@@ -1,4 +1,6 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
+
 
 /**
  * 日期范围组件
@@ -11,7 +13,7 @@ const config = {
   __config__: {
     idf: 'f_date_range',
     layout: 'form',
-    label: '日期范围C',
+    label: '日期范围',
     tag: 'el-date-picker',
     tagIcon: 'date-range',
     defaultValue: null,
@@ -21,7 +23,6 @@ const config = {
     required: true,
     regList: [],
     changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/date-picker'
   },
   style: { width: '100%' },
   type: 'daterange',
@@ -48,5 +49,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

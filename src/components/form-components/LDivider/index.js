@@ -1,4 +1,5 @@
 import controlPanel from './LDividerControlPanel'
+import {colWrapper} from "../base/ComponentGenratorHelper";
 
 /**
  * 分割线组件
@@ -13,7 +14,7 @@ const config = {
     layout: 'layout',
     label: '分割线',
     tag: 'el-divider',
-    tagIcon: 'upload',
+    tagIcon: 'slider',
     span: 24
   },
   'content-position': 'center'
@@ -31,7 +32,10 @@ function render(h, element, index, parent, container) {
   return (
     <el-col span={config.span} class={className}
             nativeOnClick={event => { activeItem(element); event.stopPropagation() }}>
-      <el-divider key={config.renderKey} conf={element}  content-position={element['content-position']}>{config.label}</el-divider>
+      <el-form-item lable-length="0">
+        <el-divider key={config.renderKey} conf={element}
+                    content-position={element['content-position']}>{config.label}</el-divider>
+      </el-form-item>
       {container.widget.itemBtns.apply(this, arguments)}
     </el-col>
   )
@@ -42,6 +46,19 @@ const property = {
 
 }
 
+function generator(scheme, globalConfig, someSpanIsNot24, generators) {
+
+  const config = scheme.__config__
+
+  const contentPosition = scheme['content-position'] ? `content-position="${scheme['content-position']}"` : ''
+
+  let str = `<el-divider ${contentPosition} >
+        ${config.label}
+      </el-divider>`
+  str = colWrapper(scheme, str, someSpanIsNot24)
+  return str
+}
+
 export default {
   idf: 'f_divider',
   describe: '分割线组件',
@@ -50,5 +67,6 @@ export default {
   controlPanel: controlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }

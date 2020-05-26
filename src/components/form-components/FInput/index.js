@@ -1,5 +1,6 @@
 import renders from '@/components/render/render'
 import FInputControlPanel from './FInputControlPanel'
+import generator from '../base/CommonFormComponentGenerator'
 
 
 /**
@@ -50,7 +51,7 @@ const property = {
 // 组件渲染函数
 function render(h, element, index, parent, container) {
 
-  console.log("input render", this)
+  // console.log("input render", this)
 
   //console.log("custom render", this, h, element, index, parent, container)
 
@@ -74,6 +75,15 @@ function render(h, element, index, parent, container) {
   )
 }
 
+/**
+ * vue代码生成器
+ * 解析schema并生成代码 （element-ui 组件）
+ * @param schema
+ */
+function codeGenerator (schema){
+
+}
+
 
 export default {
   idf: 'f_input',
@@ -83,5 +93,6 @@ export default {
   controlPanel: FInputControlPanel,
   config,
   property,
-  render
+  render,
+  generator
 }

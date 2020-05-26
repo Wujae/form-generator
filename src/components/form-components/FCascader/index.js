@@ -1,5 +1,5 @@
 import renders from '@/components/render/render'
-import controlPanel from './FCascaderControlPanel'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * 级联下拉组件
@@ -12,18 +12,17 @@ const config = {
   __config__: {
     idf: 'f_cascader',
     layout: 'form',
-    label: '级联选择C',
+    label: '级联选择',
     showLabel: true,
     labelWidth: null,
     tag: 'el-cascader',
     tagIcon: 'cascader',
     defaultValue: [],
-    dataType: 'dynamic',
+    dataType: 'static',
     span: 24,
     required: true,
     regList: [],
     changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/cascader'
   },
   options: [{
     id: 1,
@@ -88,5 +87,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

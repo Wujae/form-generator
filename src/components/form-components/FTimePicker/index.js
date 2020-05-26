@@ -1,4 +1,5 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * 时间选择组件
@@ -11,7 +12,7 @@ const config = {
   __config__: {
     idf: 'f_time_picker',
     layout: 'form',
-    label: '时间选择C',
+    label: '时间选择',
     tag: 'el-time-picker',
     tagIcon: 'time',
     defaultValue: null,
@@ -21,7 +22,6 @@ const config = {
     required: true,
     regList: [],
     changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/time-picker'
   },
   placeholder: '请选择',
   style: { width: '100%' },
@@ -47,5 +47,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

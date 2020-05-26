@@ -1,4 +1,5 @@
 import renders from '@/components/render/render'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * 密码输入框组件，控制面板继承 文本框控制面板
@@ -10,7 +11,7 @@ const config = {
   __c_panel: 'FInputControlPanel',
   __config__: {
     idf: 'f_password',
-    label: '密码C',
+    label: '密码',
     layout: 'form',
     showLabel: true,
     labelWidth: null,
@@ -21,7 +22,6 @@ const config = {
     span: 24,
     required: true,
     regList: [],
-    document: 'https://element.eleme.cn/#/zh-CN/component/input'
   },
   __slot__: {
     prepend: '',
@@ -78,5 +78,6 @@ export default {
   controlPanel: undefined,  ///未定义控制面板的情况，注意请注意使用 __c_panel 引用其他的组件的控制面板
   config,
   property,
-  render
+  render,
+  generator
 }

@@ -32,8 +32,7 @@
 
       const { activeItem } = this.$listeners
 
-      console.log('in col wrapper mounted', this.element)
-
+      // console.log('in col wrapper mounted', this.element)
 
       let config = this.element.__config__;
 

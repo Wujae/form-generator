@@ -23,19 +23,10 @@
       <el-form-item v-if="activeData.__config__.span!==undefined" label="表单栅格">
         <el-slider v-model="activeData.__config__.span" :max="24" :min="1" :marks="{12:''}" @change="spanChange" />
       </el-form-item>
-      <el-form-item v-if="activeData.__config__.layout==='rowFormItem'" label="栅格间隔">
+      <el-form-item v-if="activeData.__config__.layout==='layout'" label="栅格间隔">
         <el-input-number v-model="activeData.gutter" :min="0" placeholder="栅格间隔" />
       </el-form-item>
-      <el-form-item v-if="activeData.__config__.layout==='cardItem'" label="栅格间隔">
-        <el-input-number v-model="activeData.gutter" :min="0" placeholder="栅格间隔" />
-      </el-form-item>
-      <el-form-item v-if="activeData.__config__.layout==='rowFormItem'" label="布局模式">
-        <el-radio-group v-model="activeData.type">
-          <el-radio-button label="default" />
-          <el-radio-button label="flex" />
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item v-if="activeData.__config__.layout==='cardItem'" label="布局模式">
+      <el-form-item v-if="activeData.__config__.layout==='layout'" label="布局模式">
         <el-radio-group v-model="activeData.type">
           <el-radio-button label="default" />
           <el-radio-button label="flex" />

@@ -1,4 +1,6 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
+
 
 /**
  * 开关组件
@@ -21,7 +23,6 @@ const config = {
     required: true,
     regList: [],
     changeTag: true,
-    document: 'https://element.eleme.cn/#/zh-CN/component/switch'
   },
   style: {},
   disabled: false,
@@ -46,5 +47,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }

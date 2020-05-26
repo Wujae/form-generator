@@ -1,4 +1,5 @@
 import render from '../base/CommonRender'
+import generator from '../base/CommonFormComponentGenerator'
 
 /**
  * radio 单选组件
@@ -10,7 +11,7 @@ const config = {
   __c_panel: 'CommonComponentControlPanel',
   __config__: {
     idf: 'f_radio',
-    label: '单选框组C',
+    label: '单选框组',
     layout: 'form',
     labelWidth: null,
     showLabel: true,
@@ -23,15 +24,14 @@ const config = {
     regList: [],
     required: true,
     border: false,
-    document: 'https://element.eleme.cn/#/zh-CN/component/radio'
   },
   __slot__: {
     options: [{
       label: '选项一',
-      value: 1
+      value: '1'
     }, {
       label: '选项二',
-      value: 2
+      value: '2'
     }]
   },
   style: {},
@@ -52,5 +52,6 @@ export default {
   controlPanel: undefined,
   config,
   property,
-  render
+  render,
+  generator
 }
