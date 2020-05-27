@@ -25,6 +25,7 @@ export function makeUpJs(formConfig, type) {
   const optionsList = []
   const propsList = []
   const methodList = mixinMethod(type)
+
   const uploadVarList = []
 
   formConfig.fields.forEach(el => {
@@ -49,7 +50,7 @@ export function makeUpJs(formConfig, type) {
 /**
  * 构建组件属性
  * @param scheme
- * @param parentFrom 父form名称（null时，默认为主表单）
+ * @param {string} parentFrom 父form名称（null时，默认为主表单）
  * @param dataList dataForm基本结构
  * @param subFormSchemaList  子表单结构定义
  * @param ruleList 验证规则定义
@@ -59,7 +60,7 @@ export function makeUpJs(formConfig, type) {
  * @param uploadVarList
  */
 function buildAttributes(scheme, parentFrom, dataList, subFormSchemaList, ruleList, optionsList, methodList, propsList, uploadVarList) {
-  console.log('building js', scheme)
+  // console.log('building js', scheme)
 
   const config = scheme.__config__
 
@@ -69,7 +70,7 @@ function buildAttributes(scheme, parentFrom, dataList, subFormSchemaList, ruleLi
   }
 
   //构建子表单结构定义
-  if(config.subForm) buildSubFormSchema(scheme, parentFrom, subFormSchemaList)
+  if(config && config.subForm) buildSubFormSchema(scheme, parentFrom, subFormSchemaList)
 
   buildRules(scheme, ruleList)
 
@@ -108,7 +109,7 @@ function buildAttributes(scheme, parentFrom, dataList, subFormSchemaList, ruleLi
 
     let pForm = parentFrom
 
-    if(config.subForm) pForm = pForm ? `${pForm}.${scheme.__vModel__}`: scheme.__vModel__
+    if(config && config.subForm) pForm = pForm ? `${pForm}.${scheme.__vModel__}`: scheme.__vModel__
 
     scheme.children.forEach(item => {
       buildAttributes(item, pForm, dataList, subFormSchemaList, ruleList, optionsList, methodList, propsList, uploadVarList)
@@ -142,6 +143,8 @@ function buildData(scheme, dataList) {
   const config = scheme.__config__
   if (scheme.__vModel__ === undefined) return
 
+  if(!config) return
+
   if (config.subForm) {
 
     dataList.push(`${scheme.__vModel__}: [],`)
@@ -168,7 +171,6 @@ function buildOptions(scheme, optionsList) {
   optionsList.push(str)
 }
 
-
 // 混入处理函数
 function mixinMethod(type) {
   const list = [];
@@ -189,8 +191,11 @@ function mixinMethod(type) {
           
           if(typeof command === 'object' && typeof command.func === 'string'){
             console.log('handling command', command)
-            this[command.func].apply(this, command.params)
-            
+            if(command.func === 'custom'){
+              this.customBtnClick.apply(this, command.params)
+            } else {
+              this[command.func].apply(this, command.params)
+            }          
           }else{
             console.log('invalid command', command)
           }
@@ -238,6 +243,11 @@ function mixinMethod(type) {
               }
             }
           }
+        },`,
+        customBtnClick: `customBtnClick(refKey, data, index) {
+          if(this.FormScript && this.FormScript.customBtnClick){
+            this.FormScript.customBtnClick(refKey, data, index)
+          }
         },`
       } : null,
       dialog: {
@@ -253,6 +263,68 @@ function mixinMethod(type) {
             if(!valid) return
             this.close()
           })
+        },`,
+        handleCommand: `handleCommand(command) {
+          
+          if(typeof command === 'object' && typeof command.func === 'string'){
+            console.log('handling command', command)
+            if(command.func === 'custom'){
+              this.customBtnClick.apply(this, command.params)
+            } else {
+              this[command.func].apply(this, command.params)
+            }          
+          }else{
+            console.log('invalid command', command)
+          }
+          
+        },`,
+        addRow: `addRow(subFormPath) {
+          const structure = subFormPath.split('.')
+          let target =  structure.reduce((p, c) => {
+            if(p[c]) return p[c]
+            return p
+          }, this)
+  
+          target.push(Object.assign({}, this.subFormSchema[subFormPath]))
+        },`,
+        deleteRow: `deleteRow(field, index) {
+          if(typeof field !== 'string') return
+    
+          const tabRef = this.$refs[field]
+      
+          const structure = field.split('.')
+          let target = structure.reduce((p, c) => {
+            if (p[c]) return p[c]
+            return p
+          }, this)
+    
+          if (Number.isInteger(index)) {
+            target.splice(index, 1)
+          }
+          else {
+            const tabRef = this.$refs[field]
+            if (tabRef) {
+              const selection = tabRef.selection
+              if (selection && Array.isArray(selection) && selection.length > 0) {
+                //console.log(tabRef, selection)
+                
+                selection.forEach(sel => {
+                  const idx = target.indexOf(sel);
+                  if (idx > -1) {
+                    target.splice(idx, 1)
+                  }
+                })
+              }
+              else {
+                this.$message.error('请选择一条记录')
+              }
+            }
+          }
+        },`,
+        customBtnClick: `customBtnClick(refKey, data, index) {
+          if(this.FormScript && this.FormScript.customBtnClick){
+            this.FormScript.customBtnClick(refKey, data, index)
+          }
         },`
       }
     }
@@ -367,11 +439,70 @@ function buildexport(conf, type, data, subFormSchema, rules, selectOptions, uplo
   },
   computed: {},
   watch: {},
-  created () {},
-  mounted () {},
+  created () {
+    ${mixinCreated(conf)}
+  },
+  mounted () {
+    ${mixinMounted(conf)}
+  },
   methods: {
     ${methods}
+    ${mixinLoadFormScript(conf)}
   }
-}`
+}
+`
   return str
+}
+
+function mixinCreated(formConfig){
+  if(formConfig && formConfig.script && formConfig.script.trim().length > 0){
+
+    return `
+      this.installFormScript()
+      `
+  }
+
+  return ''
+}
+
+function mixinMounted(formConfig){
+  if(formConfig && formConfig.script && formConfig.script.trim().length > 0){
+
+    return `
+      if(this.FormScript && this.FormScript.onLoad){
+        this.FormScript.onLoad()
+      }
+    `
+  }
+
+  return ''
+}
+
+function mixinLoadFormScript(formConfig){
+
+  if(formConfig && formConfig.script && formConfig.script.trim().length > 0){
+
+    return `
+    installFormScript() {
+      this.${formConfig.script.trim()} 
+      this.FormScript.form = this
+    },`
+  }
+
+  return ''
+}
+
+function mixinOnValidation(formConfig){
+
+  if(formConfig && formConfig.script && formConfig.script.trim().length > 0){
+
+    return `
+      if(this.FormScript && this.FormScript.onValidation){
+        this.FormScript.onValidation()
+      }
+    `
+  }
+
+  return ''
+
 }

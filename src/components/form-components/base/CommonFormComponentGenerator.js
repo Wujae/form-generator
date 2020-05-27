@@ -7,7 +7,7 @@ import {tags, colWrapper} from "./ComponentGenratorHelper";
  */
 export default function generator(scheme, confGlobal, someSpanIsNot24) {
 
-  console.log('from generator scheme', scheme)
+  // console.log('form generator scheme', scheme)
 
   const config = scheme.__config__
   let labelWidth = ''

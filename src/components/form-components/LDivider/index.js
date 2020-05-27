@@ -32,7 +32,7 @@ function render(h, element, index, parent, container) {
   return (
     <el-col span={config.span} class={className}
             nativeOnClick={event => { activeItem(element); event.stopPropagation() }}>
-      <el-form-item lable-length="0">
+      <el-form-item label-width="0">
         <el-divider key={config.renderKey} conf={element}
                     content-position={element['content-position']}>{config.label}</el-divider>
       </el-form-item>

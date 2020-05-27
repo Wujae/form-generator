@@ -11,11 +11,9 @@
               </el-input>
             </el-form-item>
 
-            <el-form-item label="按钮位置" prop="position">
+            <el-form-item v-if="formData.key !== 'add'" label="按钮位置" prop="position">
               <el-radio-group v-model="formData.position" size="small">
-                <el-radio-button label="header">头部</el-radio-button>
-                <el-radio-button label="line">行内</el-radio-button>
-                <el-radio-button label="all">所有</el-radio-button>
+                <el-radio-button v-for="posi in positions" :label="posi.label">{{posi.name}}</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
@@ -81,10 +79,17 @@
             }
           ]
         },
-        dataType: 'string',
+        positions: [
+          {label: 'header', name: '头部'},
+          {label: 'line',   name: '行内'},
+          {label: 'all', name: '全部'}
+        ]
+
       }
     },
-    computed: {},
+    computed: {
+
+    },
     watch: {
 
     },

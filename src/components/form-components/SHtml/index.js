@@ -1,4 +1,5 @@
 import controlPanel from './SHtmlControlPanel'
+import render from '../base/CommonRender'
 import generator from '../base/CommonFormComponentGenerator'
 
 /**
@@ -20,45 +21,18 @@ const config =   {
     defaultValue: '演示文本',
     span: 24,
     regList: [],
-    changeTag: true,
+  },
+  __slot__: {
+    html: '<h1>have a <span style="color: red">nice</span> day !</h1>'
   },
   type: 'div',
-  placeholder: '请输入',
-  autosize: {
-    minRows: 4,
-    maxRows: 4
-  },
   style: { width: '100%' },
-  maxlength: null,
-  'show-word-limit': false,
   readonly: true
 }
 
 //组件属性
 const property = {
 
-}
-
-// 组件渲染函数
-function render(h, element, index, parent, container) {
-
-  // console.log("html render", this, parent)
-
-  const { activeItem } = this.$listeners
-  const config = element.__config__
-  let className = this.activeId === config.formId ? 'drawing-item active-from-item' : 'drawing-item'
-  if (this.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
-  let labelWidth = config.labelWidth ? `${config.labelWidth}px` : null
-  if (config.showLabel === false) labelWidth = '0'
-  return (
-    <el-col span={config.span} class={className}
-            nativeOnClick={event => { activeItem(element); event.stopPropagation() }}>
-      <el-form-item label-width={labelWidth} label={config.showLabel ? config.label : ''} required={config.required}>
-        <span>{config.defaultValue}</span>
-      </el-form-item>
-      {container.widget.itemBtns.apply(this, arguments)}
-    </el-col>
-  )
 }
 
 

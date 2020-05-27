@@ -10,7 +10,7 @@ import {classBuilder, colWrapper, UNDEFINED_GENERATOR} from "../base/ComponentGe
  */
 export default function (scheme, globalConfig, someSpanIsNot24, generators) {
 
-  console.log('building el-table', scheme)
+  // console.log('building el-table', scheme)
 
   const config = scheme.__config__
 
@@ -27,7 +27,7 @@ export default function (scheme, globalConfig, someSpanIsNot24, generators) {
   const children = scheme.children.map(col => {
     //clone配置信息
     const cellClone = Object.assign({}, col);
-    console.log('cell config clone', cellClone)
+    // console.log('cell config clone', cellClone)
 
     //label不需要显示，也不需要行el-col包裹
     cellClone.__config__.showLabel = false
@@ -81,11 +81,12 @@ function buildHeaderButtons(scheme, globalConfig) {
   return buttonConfigs.filter(btn => ['header', 'all'].includes(btn.position)).map(btn => {
 
     //引用 方便后续扩展
-    const ref = `ref="${globalConfig.formModel}.${scheme.__vModel__}_header_${btn.key}"`
+    const key =`${globalConfig.formModel}.${scheme.__vModel__}_header_${btn.key}`
+    const ref = `ref="${key}"`
     const icon = `icon="${btn.icon}"`
     const type = `type="${btn.type}"`
 
-    const methods = buildMethods(btn, scheme, globalConfig)
+    const methods = buildMethods(btn, scheme, globalConfig, key)
 
     return `<el-button size="mini" ${ref} ${icon} ${type} ${methods} >${btn.label}</el-button>`
   })
@@ -157,11 +158,13 @@ function buildDropDownItem(scheme, globalConfig) {
   return buttonConfigs.filter(btn => ['line', 'all'].includes(btn.position)).map(btn => {
 
     //引用 方便后续扩展
-    const ref = `ref="${globalConfig.formModel}.${scheme.__vModel__}_line_${btn.key}"`
+    const key =`${globalConfig.formModel}.${scheme.__vModel__}_line_${btn.key}`
+    const ref = `ref="${key}"`
+
     const icon = `icon="${btn.icon}"`
     const type = `type="${btn.type}"`
 
-    const command = buildCommand(btn, scheme, globalConfig)
+    const command = buildCommand(btn, scheme, globalConfig, key)
 
     return `<el-dropdown-item  ${ref} ${icon} ${type} ${command} >${btn.label}</el-dropdown-item>`
   })
@@ -192,7 +195,7 @@ function buildCell(cell, globalConfig, someSpanIsNot24, generators) {
 }
 
 
-function buildMethods(btn, scheme, globalConfig){
+function buildMethods(btn, scheme, globalConfig, key){
 
   if(btn.buildIn) {
 
@@ -206,14 +209,15 @@ function buildMethods(btn, scheme, globalConfig){
       return `@click="deleteRow('${globalConfig.formModel}.${scheme.__vModel__}')"`
     }
 
-  }
+  }else {
 
-  return ""
+    return `@click="customBtnClick('${key}', ${globalConfig.formModel}.${scheme.__vModel__})"`
+  }
 
 }
 
 
-function buildCommand(btn, scheme, globalConfig){
+function buildCommand(btn, scheme, globalConfig, key){
 
   if(btn.buildIn) {
 
@@ -222,8 +226,11 @@ function buildCommand(btn, scheme, globalConfig){
       return `:command="{func: 'deleteRow', params: ['${globalConfig.formModel}.${scheme.__vModel__}', scope.$index]}"`
     }
 
+  }else {
+
+    return `:command="{func: 'custom', params: ['${key}', ${globalConfig.formModel}.${scheme.__vModel__}, scope.$index]}"`
+
   }
 
-  return ""
 
 }

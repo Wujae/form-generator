@@ -52,18 +52,47 @@
       <el-form-item label="范围高亮">
         <el-switch v-model="formConf.unFocusedComponentBorder"/>
       </el-form-item>
+      <el-divider>表单脚本</el-divider>
+      <el-form-item label-width="0">
+        <el-button @click="openFormScriptDialog" type="primary" icon="el-icon-document" class="open-form-script-button">编辑脚本</el-button>
+      </el-form-item>
     </el-form>
+    <form-script-dialog title="编辑脚本" :visible.sync="formScriptDialogVisible" :script="formConf.script" @commit="saveScript"></form-script-dialog>
   </div>
 </template>
 
 <script>
+  import FormScriptDialog from './FormScriptDialog'
+
   export default {
     name: "FormPanel",
+    components: {
+      FormScriptDialog
+    },
     props: ['formConf'],
+    data() {
+      return {
+        formScriptDialogVisible: false
+      }
+    },
+    methods: {
+      openFormScriptDialog() {
+        this.formScriptDialogVisible = true
+      },
+      saveScript(scriptStr){
+
+        // console.log('form script str', scriptStr, this.formConf)
+        //
+        this.formConf.script = scriptStr
+
+      }
+    }
 
   }
 </script>
 
 <style scoped>
-
+  .open-form-script-button {
+    width: 100%;
+  }
 </style>

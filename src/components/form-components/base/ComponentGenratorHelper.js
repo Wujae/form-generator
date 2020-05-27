@@ -280,9 +280,12 @@ export const tags = {
   },
   'div': (el, confGlobal) => {
     const { tag, defaultValue } = el.__config__
+    const { text, html } = el.__slot__
     const ref = `ref="${el.__vModel__}"`
 
-    return `<${tag} ${ref}>${defaultValue}</${tag}>`
+    const body = text || html
+
+    return `<${tag} ${ref}>${body}</${tag}>`
   },
   tinymce: (el, confGlobal) => {
     const { tag, vModel } = attrBuilder(el, confGlobal)

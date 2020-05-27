@@ -42,9 +42,16 @@
         </div>
       </draggable>
       <div style="margin-left: 20px;">
-        <el-button style="padding-bottom: 0" icon="el-icon-circle-plus-outline" type="text" @click="addButton">
-          添加按钮
-        </el-button>
+        <el-dropdown style="padding-bottom: 0" trigger="click" @command="addButton">
+          <span class="el-dropdown-link">
+            <i class="el-icon-circle-plus-outline"> 添加按钮</i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item :disabled="haveAddBtn" command="add">新增</el-dropdown-item>
+            <el-dropdown-item :disabled="haveDeleteBtn" command="delete">删除</el-dropdown-item>
+            <el-dropdown-item command="custom">自定义按钮</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
       </div>
 
       <el-divider>字段</el-divider>
@@ -87,6 +94,12 @@
     computed: {
       currentBtn() {
         return this.activeData.__slot__.buttons[this.currentBtnIdx]
+      },
+      haveAddBtn() {
+        return this.activeData.__slot__.buttons.filter(btn => btn.key === 'add').length > 0
+      },
+      haveDeleteBtn() {
+        return this.activeData.__slot__.buttons.filter(btn => btn.key === 'delete').length > 0
       }
     },
     watch: {
@@ -107,27 +120,50 @@
       setOptionValue(item, val) {
         item.value = isNumberStr(val) ? +val : val
       },
-      addButton() {
-        this.activeData.__slot__.buttons.push({
+      addButton(command) {
+        let newBtn = {
           label: '自定义按钮',
           key: undefined,
           position: 'header',
           type: 'primary',
           icon: undefined,
           buildIn: false
-        });
+        }
+
+        if(command === 'add'){
+
+          newBtn.label = '新增'
+          newBtn.key = 'add'
+          newBtn.icon = 'el-icon-plus'
+          newBtn.buildIn = true
+
+          this.activeData.__slot__.buttons.push(newBtn);
+        }else if(command === 'delete'){
+
+          newBtn.label = '删除'
+          newBtn.key = 'delete'
+          newBtn.icon = 'el-icon-close'
+          newBtn.type = 'danger'
+          newBtn.position = 'all'
+          newBtn.buildIn = true
+
+          this.activeData.__slot__.buttons.push(newBtn);
+        }else if (command === 'custom'){
+
+          this.activeData.__slot__.buttons.push(newBtn);
+        }
+
       },
       openButtonDialog(btnIdx) {
 
-        if (btnIdx) {
+        if (Number.isInteger(btnIdx)) {
           this.currentBtnIdx = btnIdx
+          this.buttonDialogVisible = true
         }
-
-        this.buttonDialogVisible = true
       },
       setButton(data) {
-        console.log('set button', data, this.currentBtnIdx)
-        if (data && this.currentBtnIdx) {
+        // console.log('set button', data, this.currentBtnIdx)
+        if (data && Number.isInteger(this.currentBtnIdx)) {
           this.activeData.__slot__.buttons.splice(this.currentBtnIdx, 1, data)
         }
 
@@ -146,6 +182,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .el-dropdown-link {
+    color: #409EFF;
+  }
+
   .button-item {
     display: flex;
     border: 1px solid #f1f1f1;

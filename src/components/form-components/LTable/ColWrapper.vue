@@ -14,7 +14,7 @@
   /**
    * 表格行wrapper
    * TODO 布局组件无法被引入
-   * TODO 执行render函数，渲染出单元格子内的组件样式
+   * 执行render函数，渲染出单元格子内的组件样式
    */
   export default {
     name: "ColWrapper",

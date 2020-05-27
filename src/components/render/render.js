@@ -38,7 +38,7 @@ export default {
 
     const childObjs = componentChild[confClone.__config__.tag]
 
-    // console.log("in render", childObjs)
+    // console.log("in render", componentChild, childObjs)
 
     if (childObjs) {
       Object.keys(childObjs).forEach(key => {

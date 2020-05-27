@@ -97,7 +97,7 @@ function renderTabs(h, conf, container) {
 function renderTabPane(h, conf, container) {
   const list = []
 
-   console.log('in render el-tab-pane', conf, container)
+  // console.log('in render el-tab-pane', conf, container)
 
   conf.children.forEach((item, i) => {
 

@@ -46,7 +46,7 @@
       if (this.cols && Array.isArray(this.cols)) {
 
         colWrappers = this.cols.map((col, i) => {
-          console.log('in table wrapper rendering col', this.activeId, col.__config__.formId)
+          // console.log('in table wrapper rendering col', this.activeId, col.__config__.formId)
 
           let className = this.activeId === col.__config__.formId ? 'drawing-col-item active-from-item' : 'drawing-col-item'
           if (this.formConf.unFocusedComponentBorder) className += ' unfocus-bordered'
