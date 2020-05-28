@@ -5,13 +5,13 @@ import generator from './LTabsCodeGenerator'
 //Tab组件
 
 const config =   {
-  __c_panel: 'LTabsControlPanel', //TODO Tabs组件控制面板
+  __c_panel: 'LTabsControlPanel', // Tabs组件控制面板
   __config__: {
     idf: 'l_tab',
     tag: 'el-tabs',
     layout: 'layout',
     tagIcon: 'tab',
-    label: 'Tab容器',
+    label: 'Tabs容器',
     layoutTree: true,
   },
   children:[{
@@ -89,8 +89,11 @@ function renderTabs(h, conf, container) {
       }
     })
     delete dataObject.attrs.__config__
-    delete dataObject.attrs.__slot__
-    return h('el-tabs', dataObject, children)
+    delete dataObject.attrs.children
+
+  console.log("in tabs render tabs", dataObject)
+
+  return h('el-tabs', dataObject, children)
 }
 
 

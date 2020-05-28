@@ -26,7 +26,7 @@ const config = {
     subForm: 'table', //子表单属性 'table'
     label: '子表单',
     tag: 'el-table',
-    tagIcon: 'row',
+    tagIcon: 'table',
     defaultValue: null,
     span: 24,
     showLabel: true,

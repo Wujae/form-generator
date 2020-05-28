@@ -33,6 +33,7 @@ const config = {
   clearable: true,
   'prefix-icon': '',
   'suffix-icon': '',
+  minlength: null,
   maxlength: null,
   'show-word-limit': false,
   readonly: false,

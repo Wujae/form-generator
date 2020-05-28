@@ -20,22 +20,28 @@ export default function generator(scheme, confGlobal, someSpanIsNot24) {
     label = ''
   }
 
-  const required = config.required ? 'required' : ''
+  //required通过rules进行验证
+  const required = !ruleTrigger[config.tag] && config.required ? 'required' : ''
+
   const tagDom = tags[config.tag] ? tags[config.tag](scheme, confGlobal) : null
+
+  const hidden = config.hidden? `v-show='false'` : ''
 
   let str
 
   //在el-table的单元格内时, 不需要包裹el-form-item和el-col
   if(config.isCell){
 
+    //TODO rules的规则名称细化到属性路径结构
     const rules = buildRules(scheme)
 
-    str = `<el-form-item label-width="0" :prop="'${config.containerForm}.' + scope.$index + '.${scheme.__vModel__}'" ${rules}>
+    str = `<el-form-item label-width="0" :prop="'${config.containerForm}.' + scope.$index + '.${scheme.__vModel__}'" ${rules} ${hidden}>
         ${tagDom}
       </el-form-item>`
 
   }else{
-    str = `<el-form-item ${labelWidth} ${label} prop="${scheme.__vModel__}" ${required}>
+
+    str = `<el-form-item ${labelWidth} ${label} prop="${scheme.__vModel__}" ${required} ${hidden}>
         ${tagDom}
       </el-form-item>`
   }

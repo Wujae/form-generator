@@ -109,7 +109,9 @@ function buildElTableCol(col, globalConfig, someSpanIsNot24, generators) {
 
   const cellStr = buildCell(col, globalConfig, someSpanIsNot24, generators)
 
-  return `<el-table-column ${label}">
+  const hidden = config.hidden? `v-if='false'` : ''
+
+  return `<el-table-column ${label} ${hidden}>
     ${cellStr}
     </el-table-column>`
 

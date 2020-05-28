@@ -32,6 +32,7 @@ const config =   {
     maxRows: 4
   },
   style: { width: '100%' },
+  minlength: null,
   maxlength: null,
   'show-word-limit': false,
   readonly: false,

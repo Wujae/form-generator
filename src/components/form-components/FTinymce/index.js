@@ -11,7 +11,7 @@ import generator from '../base/CommonFormComponentGenerator'
 //基本信息
 const config = {
   // 组件的自定义配置
-  __c_panel: undefined,
+  __c_panel: 'CommonComponentControlPanel',
   __config__: {
     idf: 'f_tinymce',
     layout: 'form',

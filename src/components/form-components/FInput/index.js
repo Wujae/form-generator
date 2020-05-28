@@ -37,6 +37,7 @@ const config = {
   clearable: true,
   'prefix-icon': '',
   'suffix-icon': '',
+  minlength: null,
   maxlength: null,
   'show-word-limit': false,
   readonly: false,
@@ -74,16 +75,6 @@ function render(h, element, index, parent, container) {
     </el-col>
   )
 }
-
-/**
- * vue代码生成器
- * 解析schema并生成代码 （element-ui 组件）
- * @param schema
- */
-function codeGenerator (schema){
-
-}
-
 
 export default {
   idf: 'f_input',

@@ -14,7 +14,7 @@ const config = {
     layout: 'layout',
     label: '分割线',
     tag: 'el-divider',
-    tagIcon: 'slider',
+    tagIcon: 'divider',
     span: 24
   },
   'content-position': 'center'

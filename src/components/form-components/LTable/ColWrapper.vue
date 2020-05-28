@@ -1,6 +1,6 @@
 <template>
   <div class="table-col-wrapper">
-    <div class="col-title">{{this.element.__config__.label}}</div>
+    <div class="col-title"><svg-icon v-if="element.__config__.hidden" class-name="red-alert" icon-class="eye-slash-solid" />{{element.__config__.label}}</div>
     <div class="col-cell">
       <renders :key=this.element.renderKey :conf=this.element />
     </div>

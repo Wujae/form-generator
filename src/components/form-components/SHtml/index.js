@@ -11,13 +11,13 @@ import generator from '../base/CommonFormComponentGenerator'
 const config =   {
   __c_panel: 'SHtmlControlPanel',
   __config__: {
-    idf: 'f_html',
+    idf: 's_html',
     label: 'HTML',
     layout: 'form',
     labelWidth: null,
     showLabel: true,
     tag: 'div',
-    tagIcon: 'textarea',
+    tagIcon: 'html5',
     defaultValue: '演示文本',
     span: 24,
     regList: [],
@@ -25,7 +25,6 @@ const config =   {
   __slot__: {
     html: '<h1>have a <span style="color: red">nice</span> day !</h1>'
   },
-  type: 'div',
   style: { width: '100%' },
   readonly: true
 }
@@ -37,7 +36,7 @@ const property = {
 
 
 export default {
-  idf: 'f_html',
+  idf: 's_html',
   describe: 'HTML组件',
   type: 'static',
   idx: 1,

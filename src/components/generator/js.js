@@ -1,5 +1,5 @@
 import {exportDefault, isNumberStr, titleCase} from '@/utils/index'
-import ruleTrigger from './ruleTrigger'
+import rulesBuilder from '@/components/validator/rulesBuilder'
 
 const units = {
   KB: '1024',
@@ -50,7 +50,7 @@ export function makeUpJs(formConfig, type) {
 /**
  * 构建组件属性
  * @param scheme
- * @param {string} parentFrom 父form名称（null时，默认为主表单）
+ * @param {string} parentForm 父form名称（null时，默认为主表单）
  * @param dataList dataForm基本结构
  * @param subFormSchemaList  子表单结构定义
  * @param ruleList 验证规则定义
@@ -59,20 +59,20 @@ export function makeUpJs(formConfig, type) {
  * @param propsList
  * @param uploadVarList
  */
-function buildAttributes(scheme, parentFrom, dataList, subFormSchemaList, ruleList, optionsList, methodList, propsList, uploadVarList) {
+function buildAttributes(scheme, parentForm, dataList, subFormSchemaList, ruleList, optionsList, methodList, propsList, uploadVarList) {
   // console.log('building js', scheme)
 
   const config = scheme.__config__
 
   //子表单字段不进行构建。 表单路径 内含有'.'的作为子表单，不直接构建入formData内
-  if(parentFrom.indexOf('.') === -1){
+  if(parentForm.indexOf('.') === -1){
     buildData(scheme, dataList)
   }
 
   //构建子表单结构定义
-  if(config && config.subForm) buildSubFormSchema(scheme, parentFrom, subFormSchemaList)
+  if(config && config.subForm) buildSubFormSchema(scheme, parentForm, subFormSchemaList)
 
-  buildRules(scheme, ruleList)
+  rulesBuilder.buildRules(scheme, parentForm, ruleList)
 
   const slot = scheme.__slot__
 
@@ -107,7 +107,7 @@ function buildAttributes(scheme, parentFrom, dataList, subFormSchemaList, ruleLi
   // 构建子级组件属性
   if (scheme.children) {
 
-    let pForm = parentFrom
+    let pForm = parentForm
 
     if(config && config.subForm) pForm = pForm ? `${pForm}.${scheme.__vModel__}`: scheme.__vModel__
 
@@ -118,7 +118,7 @@ function buildAttributes(scheme, parentFrom, dataList, subFormSchemaList, ruleLi
 }
 
 // 构建子表结构定义
-function buildSubFormSchema(scheme, parentFrom, subFormSchemaList){
+function buildSubFormSchema(scheme, parentForm, subFormSchemaList){
 
   //子表结构 构建, 构建出子表的结构定义
   const formFields = scheme.children.reduce((p, c) => {
@@ -133,7 +133,7 @@ function buildSubFormSchema(scheme, parentFrom, subFormSchemaList){
 
   //console.log('subFormSchema', formFields)
 
-  subFormSchemaList.push(`"${parentFrom}.${scheme.__vModel__}": ${JSON.stringify(formFields)},`)
+  subFormSchemaList.push(`"${parentForm}.${scheme.__vModel__}": ${JSON.stringify(formFields)},`)
 
 }
 
@@ -337,31 +337,6 @@ function mixinMethod(type) {
   }
 
   return list
-}
-
-// 构建校验规则
-function buildRules(scheme, ruleList) {
-  const config = scheme.__config__
-  if (scheme.__vModel__ === undefined) return
-  const rules = []
-  if (ruleTrigger[config.tag]) {
-    if (config.required) {
-      const type = Array.isArray(config.defaultValue) ? 'type: \'array\',' : ''
-      let message = Array.isArray(config.defaultValue) ? `请至少选择一个${config.label}` : scheme.placeholder
-      if (message === undefined) message = `${config.label}不能为空`
-      rules.push(`{ required: true, ${type} message: '${message}', trigger: '${ruleTrigger[config.tag]}' }`)
-    }
-    if (config.regList && Array.isArray(config.regList)) {
-      config.regList.forEach(item => {
-        if (item.pattern) {
-          rules.push(
-            `{ pattern: ${eval(item.pattern)}, message: '${item.message}', trigger: '${ruleTrigger[config.tag]}' }`
-          )
-        }
-      })
-    }
-    ruleList.push(`${scheme.__vModel__}: [${rules.join(',')}],`)
-  }
 }
 
 function buildProps(scheme, propsList) {
