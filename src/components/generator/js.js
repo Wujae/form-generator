@@ -106,8 +106,7 @@ function buildAttributes(scheme, parentForm, dataList, subFormSchemaMap, ruleLis
   // 处理el-upload的action
   if (scheme.action && config.tag === 'el-upload') {
     uploadVarList.push(
-      `${scheme.__vModel__}Action: '${scheme.action}',
-      ${scheme.__vModel__}fileList: [],`
+      `"${parentForm}.${scheme.__vModel__}Action": '${scheme.action}',`
     )
     methodList.push(uploadBuilder.buildBeforeUpload(scheme))
 
@@ -211,8 +210,8 @@ function buildexport(conf, type, data, subFormSchema, rules, selectOptions, uplo
       ${conf.formRules}: {
         ${rules}
       },
-      ${uploadVar}
-      options: {${selectOptions}},
+      uploadAction: { ${uploadVar} },
+      options: { ${selectOptions} },
       ${props}
     }
   },

@@ -1,20 +1,9 @@
-//方法构建
-// 混入处理函数
-export default function (type, confGlobal) {
-  const list = [];
-  const minxins = {
-      file: confGlobal.formBtns ? {
-        submitForm: `submitForm() {
-          this.$refs['${confGlobal.formRef}'].validate(valid => {
-            if(!valid) return
-            // TODO 提交表单
-            console.log(this.formData)
-          })
-        },`,
-        resetForm: `resetForm() {
-          this.$refs['${confGlobal.formRef}'].resetFields()
-        },`,
-        getStructureFormData: `getStructureFormData(path) {
+//TODO 根据引入的组件实现按需加方案
+
+//基础方法
+const defaultMethod = {
+  //获取根据路径获取formData数据结构
+  getStructureFormData: `getStructureFormData(path, defaultVal) {
           // console.log(path)
           const structure = path.split('.')
           let target = structure.reduce((p, c) => {
@@ -27,11 +16,15 @@ export default function (type, confGlobal) {
 
               let nc = c.substr(0, c.lastIndexOf('['))
 
-              //console.log("haveIndex", haveIndex, this.formData, nc)
+              // console.log("haveIndex", haveIndex, this.formData, nc)
 
-              if(p[nc] && p[nc][haveIndex]) return p[nc][haveIndex]
-
-            } else if(p[c]){
+              if(p[nc] && p[nc][haveIndex] !== undefined){
+                
+                if(defaultVal  && !p[nc][haveIndex]) p[nc][haveIndex] = defaultVal
+                return p[nc][haveIndex]
+              }
+            } else if(p[c] !== undefined){
+              if(defaultVal && !p[c]) p[c] = defaultVal
               return p[c]
             }
             return p
@@ -40,7 +33,48 @@ export default function (type, confGlobal) {
           //console.log(target, this.formData)
           return target
         },`,
-        handleCommand: `handleCommand(command) {
+}
+
+//文件上传相关方法
+const fileUploadMethod = {
+  fileUploadSuccess: `fileUploadSuccess(response, file, fileList, modelPath) {
+          //文件上传成功回调
+          console.log('on file upload success', response, file, fileList, modelPath)
+          if(modelPath && typeof modelPath === 'string'){
+            let target = this.getStructureFormData(modelPath, [])
+            target.push(file)
+          }
+        
+        },`,
+  fileOnRemove: `fileOnRemove(file, fileList, modelPath){
+          let target = this.getStructureFormData(modelPath)
+          target.splice(target.indexOf(file), 1)
+        
+        },`
+}
+
+/**
+ * 表单基本方法 提交 清楚 验证等
+ * @param {object} formConfig
+ */
+const formBaseMethod = (formConfig) => {
+  return {
+    submitForm: `submitForm() {
+          this.$refs['${formConfig.formRef}'].validate(valid => {
+            if(!valid) return
+            // TODO 提交表单
+            console.log(this.formData)
+          })
+        },`,
+    resetForm: `resetForm() {
+          this.$refs['${formConfig.formRef}'].resetFields()
+        },`,
+  }
+}
+
+//子表单方法 新增。删除记录项目 自定义按钮事件等
+const subFormMethod = {
+  handleCommand: `handleCommand(command) {
 
           if(typeof command === 'object' && typeof command.func === 'string'){
             console.log('handling command', command)
@@ -54,14 +88,14 @@ export default function (type, confGlobal) {
           }
 
         },`,
-        addRow: `addRow(fieldPath) {
+  addRow: `addRow(fieldPath) {
           let target = this.getStructureFormData(fieldPath)
           let schemaField = fieldPath.replace(/\\[\\d+\\]/g, '')
 
           //拷贝对象
           target.push(JSON.parse(JSON.stringify(this.subFormSchema[schemaField])))
         },`,
-        deleteRow: `deleteRow(fieldPath, index) {
+  deleteRow: `deleteRow(fieldPath, index) {
           if(typeof fieldPath !== 'string') return
 
           let target = this.getStructureFormData(fieldPath)
@@ -95,90 +129,34 @@ export default function (type, confGlobal) {
             }
           }
         },`,
-        customBtnClick: `customBtnClick(refKey, data, index) {
+  customBtnClick: `customBtnClick(refKey, data, index) {
           if(this.FormScript && this.FormScript.customBtnClick){
             this.FormScript.customBtnClick(refKey, data, index)
           }
         },`
-      } : null,
-      dialog: {
-        onOpen: 'onOpen() {},',
-        onClose: `onClose() {
-          this.$refs['${confGlobal.formRef}'].resetFields()
+}
+
+const dialogMethod = (formConfig) => {
+  return {
+    onOpen: 'onOpen() {},',
+    onClose: `onClose() {
+          this.$refs['${formConfig.formRef}'].resetFields()
         },`,
-        close: `close() {
+    close: `close() {
           this.$emit('update:visible', false)
         },`,
-        handelConfirm: `handelConfirm() {
-          this.$refs['${confGlobal.formRef}'].validate(valid => {
-            if(!valid) return
-            this.close()
-          })
-        },`,
-        handleCommand: `handleCommand(command) {
+  }
 
-          if(typeof command === 'object' && typeof command.func === 'string'){
-            console.log('handling command', command)
-            if(command.func === 'custom'){
-              this.customBtnClick.apply(this, command.params)
-            } else {
-              this[command.func].apply(this, command.params)
-            }
-          }else{
-            console.log('invalid command', command)
-          }
+}
 
-        },`,
-        addRow: `addRow(subFormPath) {
-          const structure = subFormPath.split('.')
-          let target =  structure.reduce((p, c) => {
-            if(p[c]) return p[c]
-            return p
-          }, this)
-
-          target.push(Object.assign({}, this.subFormSchema[subFormPath]))
-        },`,
-        deleteRow: `deleteRow(field, index) {
-          if(typeof field !== 'string') return
-
-          const tabRef = this.$refs[field]
-
-          const structure = field.split('.')
-          let target = structure.reduce((p, c) => {
-            if (p[c]) return p[c]
-            return p
-          }, this)
-
-          if (Number.isInteger(index)) {
-            target.splice(index, 1)
-          }
-          else {
-            const tabRef = this.$refs[field]
-            if (tabRef) {
-              const selection = tabRef.selection
-              if (selection && Array.isArray(selection) && selection.length > 0) {
-                //console.log(tabRef, selection)
-
-                selection.forEach(sel => {
-                  const idx = target.indexOf(sel);
-                  if (idx > -1) {
-                    target.splice(idx, 1)
-                  }
-                })
-              }
-              else {
-                this.$message.error('请选择一条记录')
-              }
-            }
-          }
-        },`,
-        customBtnClick: `customBtnClick(refKey, data, index) {
-          if(this.FormScript && this.FormScript.customBtnClick){
-            this.FormScript.customBtnClick(refKey, data, index)
-          }
-        },`
-      }
-    }
+//方法构建
+// 混入处理函数
+export default function (type, confGlobal) {
+  const list = [];
+  const minxins = {
+    file: confGlobal.formBtns ? Object.assign({}, formBaseMethod(confGlobal), defaultMethod, fileUploadMethod, subFormMethod) : null,
+    dialog: Object.assign(dialogMethod(confGlobal), defaultMethod, fileUploadMethod, subFormMethod)
+  }
 
   const methods = minxins[type]
   if (methods) {

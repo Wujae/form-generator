@@ -268,21 +268,37 @@ export const tags = {
     return `<${tag} ${vModel} ${size} ${showAlpha} ${colorFormat} ${disabled}></${tag}>`
   },
   'el-upload': (el, confGlobal, path) => {
-    const { tag } = el.__config__
+    const { tag, isCell } = el.__config__
     const disabled = el.disabled ? ':disabled=\'true\'' : ''
-    const action = el.action ? `:action="${el.__vModel__}Action"` : ''
+    const action = el.action ? `:action="uploadAction['${path.join('.')}.${el.__vModel__}Action']"` : ''
     const multiple = el.multiple ? 'multiple' : ''
     const listType = el['list-type'] !== 'text' ? `list-type="${el['list-type']}"` : ''
     const accept = el.accept ? `accept="${el.accept}"` : ''
     const name = el.name !== 'file' ? `name="${el.name}"` : ''
     const autoUpload = el['auto-upload'] === false ? ':auto-upload="false"' : ''
     const beforeUpload = `:before-upload="${el.__vModel__}BeforeUpload"`
-    const fileList = `:file-list="${el.__vModel__}fileList"`
+
+    let modelPath, model
+    //此处无法使用引用，传入data = null时，赋值操作将无效
+    if(isCell) {
+      modelPath = `${getDataStructureModel(path)} + '[' + scope.$index + '].${el.__vModel__}'`
+      model = `scope.row.${el.__vModel__}`
+
+    } else {
+      modelPath = getDataStructureModel(path.concat(el.__vModel__))
+      model = getDataStructurePath(path.concat(el.__vModel__))
+
+    }
+
+    const onSuccess = `:on-success="(response, file, fileList) => fileUploadSuccess(response, file, fileList, ${modelPath})"`
+    const onRemove = `:on-remove="(file, fileList) => fileOnRemove(file, fileList, ${modelPath})"`
+
+    const fileList = `:file-list="${model}"`
     const ref = `ref="${el.__vModel__}"`
     let child = buildElUploadChild(el)
 
     if (child) child = `\n${child}\n` // 换行
-    return `<${tag} ${ref} ${fileList} ${action} ${autoUpload} ${multiple} ${beforeUpload} ${listType} ${accept} ${name} ${disabled}>${child}</${tag}>`
+    return `<${tag} ${ref} ${fileList} ${onSuccess} ${onRemove} ${action} ${autoUpload} ${multiple} ${beforeUpload} ${listType} ${accept} ${name} ${disabled}>${child}</${tag}>`
   },
   'div': (el, confGlobal, path) => {
     const { tag, defaultValue } = el.__config__
@@ -345,7 +361,7 @@ function getDataStructureProp(path){
 }
 
 /**
- * 构建数据结构， 纯字符串拼接路径
+ * 构建数据结构， 纯字符串拼接路径, 给定对象
  * @param {Array} path
  * @return {*}
  */
