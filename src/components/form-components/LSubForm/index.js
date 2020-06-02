@@ -1,27 +1,46 @@
 import draggable from 'vuedraggable'
-import generator from './LCardCodeGenerator'
+import generator from './LSubFormCodeGenerator'
 
 /**
- *  卡片组件
+ * 子表单组件
+ * 基于el-card实现
  */
 
+//基本信息
 const config = {
-  __c_panel: 'CommonComponentControlPanel',
+  // 组件的自定义配置
+  __c_panel: 'LTableControlPanel',
   __config__: {
-    idf: 'l_card',
-    layout: 'layout',
+    idf: 'l_sub_form',
+    layout: 'form',
+    subForm: 'form', //子表属性 'form'
+    label: '子表单',
     tag: 'el-card',
     tagIcon: 'card',
-    label: '卡片',
-    layoutTree: true
+    defaultValue: null,
+    span: 24,
+    showLabel: true,
+    labelWidth: null,
+    required: true,
+    regList: [],
+    changeTag: true,
   },
-  children: [],
+  __slot__: {
+    'buttons': [
+      {key:'add', position:'header', type: 'primary', label: '添加', icon: "el-icon-plus", buildIn: true},
+      {key:'delete', position:'all', type: 'danger', label: '删除', icon: "el-icon-close", buildIn: true}
+    ]
+  },
   type: 'default',
   justify: 'start',
   align: 'top',
-  'class': ['layout-card'],   //自定义class
+  children: [],
+  'class': ['layout-card'],
+  'header-class-name': ['layout-form-header-row'],
+  showIndex: false
 }
 
+//组件属性
 const property = {}
 
 // 组件渲染函数
@@ -45,6 +64,9 @@ function render(h, element, index, parent, container) {
             nativeOnClick={event => {activeItem(element);event.stopPropagation()}}>
       <el-form-item label-width="0">
         <el-card >
+          <div slot="header" className="clearfix">
+            <table-header class="layout-table-label" conf={element}/>
+          </div>
           <el-col>
             <el-row gutter={config.gutter} class='drawing-row-item '>
               <span class="component-name">{config.componentName}</span>
@@ -61,13 +83,14 @@ function render(h, element, index, parent, container) {
 }
 
 export default {
-  idf: 'l_card',
-  idx: 3,
+  idf: 'l_sub_form',
+  describe: '子表单 主要应对1..*场景',
   type: 'layout',
-  describe: '卡片组件',
+  idx: 7,
   controlPanel: undefined,
   config,
   property,
   render,
   generator
 }
+

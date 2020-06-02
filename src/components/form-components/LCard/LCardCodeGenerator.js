@@ -9,11 +9,12 @@ import {colWrapper, classBuilder, UNDEFINED_GENERATOR} from "../base/ComponentGe
  * @param generators
  * @return {string|*}
  */
-export default function (scheme, globalConfig, someSpanIsNot24, generators) {
+export default function (scheme, globalConfig, someSpanIsNot24, path, generators) {
   const config = scheme.__config__
+
   const type = scheme.type === 'default' ? '' : `type="${scheme.type}"`
-  const justify = scheme.type === 'default' ? '' : `justify="${scheme.justify}"`
-  const align = scheme.type === 'default' ? '' : `align="${scheme.align}"`
+  const justify = scheme.justify === 'default' ? '' : `justify="${scheme.justify}"`
+  const align = scheme.align === 'default' ? '' : `align="${scheme.align}"`
   const gutter = scheme.gutter ? `:gutter="${scheme.gutter}"` : ''
   const clazz = classBuilder(scheme, globalConfig)
   const children = scheme.children.map(el => {

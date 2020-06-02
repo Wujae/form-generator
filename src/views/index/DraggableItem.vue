@@ -70,12 +70,11 @@
     ],
     render(h) {
 
-      // console.log('draggableItem render', this);
+      //console.log('draggableItem render', this);
 
       let eleConfig = this.element.__config__;
 
       //console.log("eleConfig", eleConfig)
-
       if (isCustomLayout(eleConfig.layout)) {
 
         const layout = customLayouts[eleConfig.idf]

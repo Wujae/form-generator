@@ -41,6 +41,9 @@ export default {
    * @param ruleList
    */
   buildRules(scheme, parentForm, ruleList) {
+
+    // console.log('in build rules', parentForm, scheme)
+
     const config = scheme.__config__
     if (scheme.__vModel__ === undefined) return
     const rules = []
@@ -79,7 +82,7 @@ export default {
           }
         })
       }
-      ruleList.push(`${scheme.__vModel__}: [${rules.join(',')}],`)
+      ruleList.push(`'${parentForm}.${scheme.__vModel__}': [${rules.join(',')}],`)
     }
   }
 }

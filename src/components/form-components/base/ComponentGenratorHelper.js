@@ -1,3 +1,7 @@
+import EsEnum from "@/utils/EsEnum";
+
+export const UNDEFINED_GENERATOR = '未提供组件的代码生成器定义'
+
 export function classBuilder(el, confGlobal, className){
 
   const clazzes = el[className ? className : 'class']
@@ -24,11 +28,13 @@ export function colWrapper(scheme, str, someSpanIsNot24, forceWrap) {
 }
 
 // 添加属性
-function attrBuilder(el, confGlobal) {
+function attrBuilder(el, confGlobal, path) {
+
+  // console.log('path', path)
 
   return {
     tag: el.__config__.tag,
-    vModel: `v-model="${el.__config__.isCell ? 'scope.row' : confGlobal.formModel}.${el.__vModel__}"`,
+    vModel: `v-model="${el.__config__.isCell ? 'scope.row' : path.join('_')}.${el.__vModel__}"`,
     clearable: el.clearable ? 'clearable' : '',
     placeholder: el.placeholder ? `placeholder="${el.placeholder}"` : '',
     width: el.style && el.style.width ? ':style="{width: \'100%\'}"' : '',
@@ -61,43 +67,43 @@ function buildElInputChild(scheme) {
 }
 
 // el-select 子级
-function buildElSelectChild(scheme) {
+function buildElSelectChild(scheme, path) {
   const children = []
   const slot = scheme.__slot__
   if (slot && slot.options && slot.options.length) {
-    children.push(`<el-option v-for="(item, index) in ${scheme.__vModel__}Options" :key="index" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>`)
+    children.push(`<el-option v-for="(item, index) in options['${path.join(".")}.${scheme.__vModel__}Options']" :key="index" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>`)
   }
   return children.join('\n')
 }
 
 // el-radio-group 子级
-function buildElRadioGroupChild(scheme) {
+function buildElRadioGroupChild(scheme, path) {
   const children = []
   const slot = scheme.__slot__
   const config = scheme.__config__
   if (slot && slot.options && slot.options.length) {
     const tag = config.optionType === 'button' ? 'el-radio-button' : 'el-radio'
     const border = config.border ? 'border' : ''
-    children.push(`<${tag} v-for="(item, index) in ${scheme.__vModel__}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`)
+    children.push(`<${tag} v-for="(item, index) in options['${path.join(".")}.${scheme.__vModel__}Options']" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`)
   }
   return children.join('\n')
 }
 
 // el-checkbox-group 子级
-function buildElCheckboxGroupChild(scheme) {
+function buildElCheckboxGroupChild(scheme, path) {
   const children = []
   const slot = scheme.__slot__
   const config = scheme.__config__
   if (slot && slot.options && slot.options.length) {
     const tag = config.optionType === 'button' ? 'el-checkbox-button' : 'el-checkbox'
     const border = config.border ? 'border' : ''
-    children.push(`<${tag} v-for="(item, index) in ${scheme.__vModel__}Options" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`)
+    children.push(`<${tag} v-for="(item, index) in options['${path.join(".")}.${scheme.__vModel__}Options']" :key="index" :label="item.value" :disabled="item.disabled" ${border}>{{item.label}}</${tag}>`)
   }
   return children.join('\n')
 }
 
 // el-upload 子级
-function buildElUploadChild(scheme) {
+function buildElUploadChild(scheme, path) {
   const list = []
   const config = scheme.__config__
   if (scheme['list-type'] === 'picture-card') list.push('<i class="el-icon-plus"></i>')
@@ -107,10 +113,10 @@ function buildElUploadChild(scheme) {
 }
 
 export const tags = {
-  'el-button': (el, confGlobal) => {
+  'el-button': (el, confGlobal, path) => {
     const {
       tag, disabled
-    } = attrBuilder(el, confGlobal)
+    } = attrBuilder(el, confGlobal, path)
     const type = el.type ? `type="${el.type}"` : ''
     const icon = el.icon ? `icon="${el.icon}"` : ''
     const round = el.round ? 'round' : ''
@@ -122,10 +128,10 @@ export const tags = {
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${type} ${icon} ${round} ${size} ${plain} ${disabled} ${circle}>${child}</${tag}>`
   },
-  'el-input': (el, confGlobal) => {
+  'el-input': (el, confGlobal, path) => {
     const {
       tag, disabled, vModel, clearable, placeholder, width
-    } = attrBuilder(el, confGlobal)
+    } = attrBuilder(el, confGlobal, path)
     const maxlength = el.maxlength ? `:maxlength="${el.maxlength}"` : ''
     const showWordLimit = el['show-word-limit'] ? 'show-word-limit' : ''
     const readonly = el.readonly ? 'readonly' : ''
@@ -141,10 +147,10 @@ export const tags = {
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${vModel} ${type} ${placeholder} ${maxlength} ${showWordLimit} ${readonly} ${disabled} ${clearable} ${prefixIcon} ${suffixIcon} ${showPassword} ${autosize} ${width}>${child}</${tag}>`
   },
-  'el-input-number': (el, confGlobal) => {
+  'el-input-number': (el, confGlobal, path) => {
     const {
       tag, disabled, vModel, placeholder
-    } = attrBuilder(el, confGlobal)
+    } = attrBuilder(el, confGlobal, path)
     const controlsPosition = el['controls-position'] ? `controls-position=${el['controls-position']}` : ''
     const min = el.min ? `:min='${el.min}'` : ''
     const max = el.max ? `:max='${el.max}'` : ''
@@ -154,37 +160,37 @@ export const tags = {
 
     return `<${tag} ${vModel} ${placeholder} ${step} ${stepStrictly} ${precision} ${controlsPosition} ${min} ${max} ${disabled}></${tag}>`
   },
-  'el-select': (el, confGlobal) => {
+  'el-select': (el, confGlobal, path) => {
     const {
       tag, disabled, vModel, clearable, placeholder, width
-    } = attrBuilder(el, confGlobal)
+    } = attrBuilder(el, confGlobal, path)
     const filterable = el.filterable ? 'filterable' : ''
     const multiple = el.multiple ? 'multiple' : ''
-    let child = buildElSelectChild(el)
+    let child = buildElSelectChild(el, path)
 
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${vModel} ${placeholder} ${disabled} ${multiple} ${filterable} ${clearable} ${width}>${child}</${tag}>`
   },
-  'el-radio-group': (el, confGlobal) => {
-    const { tag, disabled, vModel } = attrBuilder(el, confGlobal)
+  'el-radio-group': (el, confGlobal, path) => {
+    const { tag, disabled, vModel } = attrBuilder(el, confGlobal, path)
     const size = `size="${el.size}"`
-    let child = buildElRadioGroupChild(el)
+    let child = buildElRadioGroupChild(el, path)
 
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${vModel} ${size} ${disabled}>${child}</${tag}>`
   },
-  'el-checkbox-group': (el, confGlobal) => {
-    const { tag, disabled, vModel } = attrBuilder(el, confGlobal)
+  'el-checkbox-group': (el, confGlobal, path) => {
+    const { tag, disabled, vModel } = attrBuilder(el, confGlobal, path)
     const size = `size="${el.size}"`
     const min = el.min ? `:min="${el.min}"` : ''
     const max = el.max ? `:max="${el.max}"` : ''
-    let child = buildElCheckboxGroupChild(el)
+    let child = buildElCheckboxGroupChild(el, path)
 
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${vModel} ${min} ${max} ${size} ${disabled}>${child}</${tag}>`
   },
-  'el-switch': (el, confGlobal) => {
-    const { tag, disabled, vModel } = attrBuilder(el, confGlobal)
+  'el-switch': (el, confGlobal, path) => {
+    const { tag, disabled, vModel } = attrBuilder(el, confGlobal, path)
     const activeText = el['active-text'] ? `active-text="${el['active-text']}"` : ''
     const inactiveText = el['inactive-text'] ? `inactive-text="${el['inactive-text']}"` : ''
     const activeColor = el['active-color'] ? `active-color="${el['active-color']}"` : ''
@@ -194,11 +200,11 @@ export const tags = {
 
     return `<${tag} ${vModel} ${activeText} ${inactiveText} ${activeColor} ${inactiveColor} ${activeValue} ${inactiveValue} ${disabled}></${tag}>`
   },
-  'el-cascader': (el, confGlobal) => {
+  'el-cascader': (el, confGlobal, path) => {
     const {
       tag, disabled, vModel, clearable, placeholder, width
-    } = attrBuilder(el, confGlobal)
-    const options = el.options ? `:options="${el.__vModel__}Options"` : ''
+    } = attrBuilder(el, confGlobal, path)
+    const options = el.options ? `:options="options['${path.join('.')}.${el.__vModel__}Options']"` : ''
     const props = el.props ? `:props="${el.__vModel__}Props"` : ''
     const showAllLevels = el['show-all-levels'] ? '' : ':show-all-levels="false"'
     const filterable = el.filterable ? 'filterable' : ''
@@ -206,8 +212,8 @@ export const tags = {
 
     return `<${tag} ${vModel} ${options} ${props} ${width} ${showAllLevels} ${placeholder} ${separator} ${filterable} ${clearable} ${disabled}></${tag}>`
   },
-  'el-slider': (el, confGlobal) => {
-    const { tag, disabled, vModel } = attrBuilder(el, confGlobal)
+  'el-slider': (el, confGlobal, path) => {
+    const { tag, disabled, vModel } = attrBuilder(el, confGlobal, path)
     const min = el.min ? `:min='${el.min}'` : ''
     const max = el.max ? `:max='${el.max}'` : ''
     const step = el.step ? `:step='${el.step}'` : ''
@@ -216,10 +222,10 @@ export const tags = {
 
     return `<${tag} ${min} ${max} ${step} ${vModel} ${range} ${showStops} ${disabled}></${tag}>`
   },
-  'el-time-picker': (el, confGlobal) => {
+  'el-time-picker': (el, confGlobal, path) => {
     const {
       tag, disabled, vModel, clearable, placeholder, width
-    } = attrBuilder(el, confGlobal)
+    } = attrBuilder(el, confGlobal, path)
     const startPlaceholder = el['start-placeholder'] ? `start-placeholder="${el['start-placeholder']}"` : ''
     const endPlaceholder = el['end-placeholder'] ? `end-placeholder="${el['end-placeholder']}"` : ''
     const rangeSeparator = el['range-separator'] ? `range-separator="${el['range-separator']}"` : ''
@@ -230,10 +236,10 @@ export const tags = {
 
     return `<${tag} ${vModel} ${isRange} ${format} ${valueFormat} ${pickerOptions} ${width} ${placeholder} ${startPlaceholder} ${endPlaceholder} ${rangeSeparator} ${clearable} ${disabled}></${tag}>`
   },
-  'el-date-picker': (el, confGlobal) => {
+  'el-date-picker': (el, confGlobal, path) => {
     const {
       tag, disabled, vModel, clearable, placeholder, width
-    } = attrBuilder(el, confGlobal)
+    } = attrBuilder(el, confGlobal, path)
     const startPlaceholder = el['start-placeholder'] ? `start-placeholder="${el['start-placeholder']}"` : ''
     const endPlaceholder = el['end-placeholder'] ? `end-placeholder="${el['end-placeholder']}"` : ''
     const rangeSeparator = el['range-separator'] ? `range-separator="${el['range-separator']}"` : ''
@@ -244,8 +250,8 @@ export const tags = {
 
     return `<${tag} ${type} ${vModel} ${format} ${valueFormat} ${width} ${placeholder} ${startPlaceholder} ${endPlaceholder} ${rangeSeparator} ${clearable} ${readonly} ${disabled}></${tag}>`
   },
-  'el-rate': (el, confGlobal) => {
-    const { tag, disabled, vModel } = attrBuilder(el, confGlobal)
+  'el-rate': (el, confGlobal, path) => {
+    const { tag, disabled, vModel } = attrBuilder(el, confGlobal, path)
     const max = el.max ? `:max='${el.max}'` : ''
     const allowHalf = el['allow-half'] ? 'allow-half' : ''
     const showText = el['show-text'] ? 'show-text' : ''
@@ -253,15 +259,15 @@ export const tags = {
 
     return `<${tag} ${vModel} ${max} ${allowHalf} ${showText} ${showScore} ${disabled}></${tag}>`
   },
-  'el-color-picker': (el, confGlobal) => {
-    const { tag, disabled, vModel } = attrBuilder(el, confGlobal)
+  'el-color-picker': (el, confGlobal, path) => {
+    const { tag, disabled, vModel } = attrBuilder(el, confGlobal, path)
     const size = `size="${el.size}"`
     const showAlpha = el['show-alpha'] ? 'show-alpha' : ''
     const colorFormat = el['color-format'] ? `color-format="${el['color-format']}"` : ''
 
     return `<${tag} ${vModel} ${size} ${showAlpha} ${colorFormat} ${disabled}></${tag}>`
   },
-  'el-upload': (el, confGlobal) => {
+  'el-upload': (el, confGlobal, path) => {
     const { tag } = el.__config__
     const disabled = el.disabled ? ':disabled=\'true\'' : ''
     const action = el.action ? `:action="${el.__vModel__}Action"` : ''
@@ -278,7 +284,7 @@ export const tags = {
     if (child) child = `\n${child}\n` // 换行
     return `<${tag} ${ref} ${fileList} ${action} ${autoUpload} ${multiple} ${beforeUpload} ${listType} ${accept} ${name} ${disabled}>${child}</${tag}>`
   },
-  'div': (el, confGlobal) => {
+  'div': (el, confGlobal, path) => {
     const { tag, defaultValue } = el.__config__
     const { text, html } = el.__slot__
     const ref = `ref="${el.__vModel__}"`
@@ -287,12 +293,110 @@ export const tags = {
 
     return `<${tag} ${ref}>${body}</${tag}>`
   },
-  tinymce: (el, confGlobal) => {
-    const { tag, vModel } = attrBuilder(el, confGlobal)
+  tinymce: (el, confGlobal, path) => {
+    const { tag, vModel } = attrBuilder(el, confGlobal, path)
     const height = el.height ? `:height="${el.height}"` : ''
     const branding = el.branding ? `:branding="${el.branding}"` : ''
     return `<${tag} ${vModel} ${height} ${branding}></${tag}>`
   }
 }
 
-export const UNDEFINED_GENERATOR = '未提供组件的代码生成器定义'
+/**
+ * 获取数据结构，动态绑定字符串
+ * @param {Array} path
+ * @return {*}
+ */
+function getDataStructureModel(path){
+  let str = path.reduce((p, c, i, arr) =>{
+
+    if(p && p.includes('.')){
+      return `${p}[' + ${arr.slice(0, i).join('_')}_idx + '].${c}`
+
+    } else if(p){
+      return p += ('.' +  c)
+    }
+
+    return p || c
+  }, null)
+
+  return `'${str}'`
+}
+
+/**
+ * 获取数据结构，动态绑定:prop
+ * prop不需要顶端的form，故最后截去第一个节点
+ * @param {Array} path
+ * @return {*}
+ */
+function getDataStructureProp(path){
+  let str = path.reduce((p, c, i, arr) =>{
+
+    if(p && p.includes('.')){
+      return `${p}.' + ${arr.slice(0, i).join('_')}_idx + '.${c}`
+
+    } else if(p){
+      return p += ('.' +  c)
+    }
+
+    return p || c
+  }, '')
+
+  return `'${str.substr(str.indexOf('.') + 1)}'`
+}
+
+/**
+ * 构建数据结构， 纯字符串拼接路径
+ * @param {Array} path
+ * @return {*}
+ */
+function getDataStructurePath(path){
+  return path.reduce((p, c, i, arr) =>{
+
+    if(p && p.includes('.')){
+      return `${p}[${arr.slice(0, i).join('_')}_idx].${c}`
+
+    } else if(p){
+      return p += ('.' +  c)
+    }
+
+    return p || c
+  }, null)
+}
+
+/**
+ * 获取数据结构，动态绑定:Ref
+ * @param {Array} path
+ * @return {*}
+ */
+function getDataStructureRef(path){
+
+  return getDataStructureModel(path)
+}
+
+/**
+ * 根据模式（mode）,构建数据结构
+ * @param path
+ * @param { String } mode
+ * @return {*}
+ */
+function getDataStructure(path, mode){
+
+  if(ModeEum.MODEL === mode) return getDataStructureModel(path)
+  else if (ModeEum.PROP === mode) return getDataStructureProp(path)
+  else if (ModeEum.PATH === mode) return getDataStructurePath(path)
+  else if (ModeEum.REF === mode) return getDataStructureRef(path)
+
+  return ''
+}
+
+const ModeEum = {
+  PROP : 'PROP',
+  MODEL : 'MODEL',
+  PATH : 'PATH',
+  REF : 'REF',
+}
+
+export const StructureBuilder = {
+  getDataStructure,
+  ModeEum
+}

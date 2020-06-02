@@ -31,7 +31,7 @@ const config = {
   __slot__: {
     'list-type': true
   },
-  action: 'https://jsonplaceholder.typicode.com/posts/',
+  action: 'http://www.mocky.io/v2/5ed4cfd63300005100f7a43b',
   disabled: false,
   accept: '',
   name: 'file',

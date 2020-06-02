@@ -1,11 +1,10 @@
 import {exportDefault, isNumberStr, titleCase} from '@/utils/index'
+import mixinMethod from './method'
+import optionBuilder from './option'
+import uploadBuilder from './upload'
 import rulesBuilder from '@/components/validator/rulesBuilder'
 
-const units = {
-  KB: '1024',
-  MB: '1024 / 1024',
-  GB: '1024 / 1024 / 1024'
-}
+
 let confGlobal
 const inheritAttrs = {
   file: '',
@@ -20,23 +19,23 @@ const inheritAttrs = {
 export function makeUpJs(formConfig, type) {
   confGlobal = formConfig = JSON.parse(JSON.stringify(formConfig))
   const dataList = []
-  const subFormSchemaList = []
+  const subFormSchemaMap = {}
   const ruleList = []
   const optionsList = []
   const propsList = []
-  const methodList = mixinMethod(type)
+  const methodList = mixinMethod(type, formConfig)
 
   const uploadVarList = []
 
   formConfig.fields.forEach(el => {
-    buildAttributes(el, confGlobal.formModel, dataList, subFormSchemaList, ruleList, optionsList, methodList, propsList, uploadVarList)
+    buildAttributes(el, confGlobal.formModel, dataList, subFormSchemaMap, ruleList, optionsList, methodList, propsList, uploadVarList)
   })
 
   const script = buildexport(
     formConfig,
     type,
     dataList.join('\n'),
-    subFormSchemaList.join('\n'),
+    Object.keys(subFormSchemaMap).map( k => `"${k}" : ${JSON.stringify(subFormSchemaMap[k])},`).join('\n'),
     ruleList.join('\n'),
     optionsList.join('\n'),
     uploadVarList.join('\n'),
@@ -52,25 +51,30 @@ export function makeUpJs(formConfig, type) {
  * @param scheme
  * @param {string} parentForm 父form名称（null时，默认为主表单）
  * @param dataList dataForm基本结构
- * @param subFormSchemaList  子表单结构定义
+ * @param subFormSchemaMap  子表单结构定义
  * @param ruleList 验证规则定义
  * @param optionsList 选项（下拉/radio/checkbox）
  * @param methodList  方法
  * @param propsList
  * @param uploadVarList
  */
-function buildAttributes(scheme, parentForm, dataList, subFormSchemaList, ruleList, optionsList, methodList, propsList, uploadVarList) {
+function buildAttributes(scheme, parentForm, dataList, subFormSchemaMap, ruleList, optionsList, methodList, propsList, uploadVarList) {
   // console.log('building js', scheme)
+  let currentSchema
 
   const config = scheme.__config__
 
-  //子表单字段不进行构建。 表单路径 内含有'.'的作为子表单，不直接构建入formData内
-  if(parentForm.indexOf('.') === -1){
-    buildData(scheme, dataList)
-  }
-
   //构建子表单结构定义
-  if(config && config.subForm) buildSubFormSchema(scheme, parentForm, subFormSchemaList)
+  if(config && config.subForm) currentSchema = buildSubFormSchema(scheme, parentForm, subFormSchemaMap)
+
+  /*
+   * 字段路径 内含有'.'的作为子表单，
+   * table 类子表单字段不进行直接构建
+   * form 类子表单字段需要对第一个对象执行构建
+   */
+  if(parentForm.indexOf('.') === -1){
+    buildData(scheme, dataList, currentSchema)
+  }
 
   rulesBuilder.buildRules(scheme, parentForm, ruleList)
 
@@ -78,15 +82,23 @@ function buildAttributes(scheme, parentForm, dataList, subFormSchemaList, ruleLi
 
   // 特殊处理options属性
   if (scheme.options || (slot && slot.options && slot.options.length)) {
-    buildOptions(scheme, optionsList)
+    //buildOptions(scheme, parentForm, optionsList)
+
+    optionBuilder.buildOptions(scheme, parentForm, optionsList)
+
+    //TODO 动态加载options
+    /*
     if (config.dataType === 'dynamic') {
+
       const model = `${scheme.__vModel__}Options`
       const options = titleCase(model)
-      buildOptionMethod(`get${options}`, model, methodList)
+      optionBuilder.buildOptionMethod(`get${options}`, model, methodList)
+
     }
+    */
   }
 
-  // 处理props
+  // 处理props el-cascader
   if (scheme.props && scheme.props.props) {
     buildProps(scheme, propsList)
   }
@@ -97,10 +109,11 @@ function buildAttributes(scheme, parentForm, dataList, subFormSchemaList, ruleLi
       `${scheme.__vModel__}Action: '${scheme.action}',
       ${scheme.__vModel__}fileList: [],`
     )
-    methodList.push(buildBeforeUpload(scheme))
+    methodList.push(uploadBuilder.buildBeforeUpload(scheme))
+
     // 非自动上传时，生成手动上传的函数
     if (!scheme['auto-upload']) {
-      methodList.push(buildSubmitUpload(scheme))
+      methodList.push(uploadBuilder.buildSubmitUpload(scheme))
     }
   }
 
@@ -112,42 +125,60 @@ function buildAttributes(scheme, parentForm, dataList, subFormSchemaList, ruleLi
     if(config && config.subForm) pForm = pForm ? `${pForm}.${scheme.__vModel__}`: scheme.__vModel__
 
     scheme.children.forEach(item => {
-      buildAttributes(item, pForm, dataList, subFormSchemaList, ruleList, optionsList, methodList, propsList, uploadVarList)
+      buildAttributes(item, pForm, dataList, subFormSchemaMap, ruleList, optionsList, methodList, propsList, uploadVarList)
     })
   }
 }
 
-// 构建子表结构定义
-function buildSubFormSchema(scheme, parentForm, subFormSchemaList){
+/**
+ * 构建子表结构定义
+ * 递归内部嵌套子表 实现完整的结构解析
+ * @param scheme
+ * @param parentForm
+ * @param subFormSchemaMap
+ * @return {*}
+ */
+function buildSubFormSchema(scheme, parentForm, subFormSchemaMap){
 
   //子表结构 构建, 构建出子表的结构定义
-  const formFields = scheme.children.reduce((p, c) => {
+  const formFields = scheme.children.reduce((p, cs) => {
 
-    const config = c.__config__;
+    const config = cs.__config__, csc = cs.children
 
-    if (c.__vModel__ !== undefined) p[c.__vModel__] = config.defaultValue
+    if(csc && Array.isArray(csc)) {
+
+      const subFormFields = buildSubFormSchema(cs, `${parentForm}.${scheme.__vModel__}`, subFormSchemaMap)
+
+      if (cs.__vModel__ !== undefined) p[cs.__vModel__] = config.subForm === 'table'? [] :  [ subFormFields ]
+    }  else {
+
+      if (cs.__vModel__ !== undefined) p[cs.__vModel__] = config.defaultValue
+    }
 
     return p
 
   }, {})
 
-  //console.log('subFormSchema', formFields)
+  // console.log('subFormSchema', formFields)
 
-  subFormSchemaList.push(`"${parentForm}.${scheme.__vModel__}": ${JSON.stringify(formFields)},`)
+  subFormSchemaMap[`${parentForm}.${scheme.__vModel__}`] = formFields
+
+  return formFields
 
 }
 
 // 构建data
-function buildData(scheme, dataList) {
+function buildData(scheme, dataList, currentSchema) {
 
   const config = scheme.__config__
   if (scheme.__vModel__ === undefined) return
 
   if(!config) return
 
+  //form类子表单需要提供一个初始的scheme定义
   if (config.subForm) {
 
-    dataList.push(`${scheme.__vModel__}: [],`)
+    dataList.push(`${scheme.__vModel__} : [${config.subForm === 'form' ? JSON.stringify(currentSchema): ''}],`)
 
   } else {
 
@@ -158,236 +189,9 @@ function buildData(scheme, dataList) {
   // console.log(dataList)
 }
 
-// 构建options
-function buildOptions(scheme, optionsList) {
-  if (scheme.__vModel__ === undefined) return
-  // el-cascader直接有options属性，其他组件都是定义在slot中，所以有两处判断
-  let {options} = scheme
-  if (!options) options = scheme.__slot__.options
-  if (scheme.__config__.dataType === 'dynamic') {
-    options = []
-  }
-  const str = `${scheme.__vModel__}Options: ${JSON.stringify(options)},`
-  optionsList.push(str)
-}
-
-// 混入处理函数
-function mixinMethod(type) {
-  const list = [];
-  const
-    minxins = {
-      file: confGlobal.formBtns ? {
-        submitForm: `submitForm() {
-          this.$refs['${confGlobal.formRef}'].validate(valid => {
-            if(!valid) return
-            // TODO 提交表单
-            console.log(this.formData)
-          })
-        },`,
-        resetForm: `resetForm() {
-          this.$refs['${confGlobal.formRef}'].resetFields()
-        },`,
-        handleCommand: `handleCommand(command) {
-          
-          if(typeof command === 'object' && typeof command.func === 'string'){
-            console.log('handling command', command)
-            if(command.func === 'custom'){
-              this.customBtnClick.apply(this, command.params)
-            } else {
-              this[command.func].apply(this, command.params)
-            }          
-          }else{
-            console.log('invalid command', command)
-          }
-          
-        },`,
-        addRow: `addRow(subFormPath) {
-          const structure = subFormPath.split('.')
-          let target =  structure.reduce((p, c) => {
-            if(p[c]) return p[c]
-            return p
-          }, this)
-  
-          target.push(Object.assign({}, this.subFormSchema[subFormPath]))
-        },`,
-        deleteRow: `deleteRow(field, index) {
-          if(typeof field !== 'string') return
-    
-          const tabRef = this.$refs[field]
-      
-          const structure = field.split('.')
-          let target = structure.reduce((p, c) => {
-            if (p[c]) return p[c]
-            return p
-          }, this)
-    
-          if (Number.isInteger(index)) {
-            target.splice(index, 1)
-          }
-          else {
-            const tabRef = this.$refs[field]
-            if (tabRef) {
-              const selection = tabRef.selection
-              if (selection && Array.isArray(selection) && selection.length > 0) {
-                //console.log(tabRef, selection)
-                
-                selection.forEach(sel => {
-                  const idx = target.indexOf(sel);
-                  if (idx > -1) {
-                    target.splice(idx, 1)
-                  }
-                })
-              }
-              else {
-                this.$message.error('请选择一条记录')
-              }
-            }
-          }
-        },`,
-        customBtnClick: `customBtnClick(refKey, data, index) {
-          if(this.FormScript && this.FormScript.customBtnClick){
-            this.FormScript.customBtnClick(refKey, data, index)
-          }
-        },`
-      } : null,
-      dialog: {
-        onOpen: 'onOpen() {},',
-        onClose: `onClose() {
-          this.$refs['${confGlobal.formRef}'].resetFields()
-        },`,
-        close: `close() {
-          this.$emit('update:visible', false)
-        },`,
-        handelConfirm: `handelConfirm() {
-          this.$refs['${confGlobal.formRef}'].validate(valid => {
-            if(!valid) return
-            this.close()
-          })
-        },`,
-        handleCommand: `handleCommand(command) {
-          
-          if(typeof command === 'object' && typeof command.func === 'string'){
-            console.log('handling command', command)
-            if(command.func === 'custom'){
-              this.customBtnClick.apply(this, command.params)
-            } else {
-              this[command.func].apply(this, command.params)
-            }          
-          }else{
-            console.log('invalid command', command)
-          }
-          
-        },`,
-        addRow: `addRow(subFormPath) {
-          const structure = subFormPath.split('.')
-          let target =  structure.reduce((p, c) => {
-            if(p[c]) return p[c]
-            return p
-          }, this)
-  
-          target.push(Object.assign({}, this.subFormSchema[subFormPath]))
-        },`,
-        deleteRow: `deleteRow(field, index) {
-          if(typeof field !== 'string') return
-    
-          const tabRef = this.$refs[field]
-      
-          const structure = field.split('.')
-          let target = structure.reduce((p, c) => {
-            if (p[c]) return p[c]
-            return p
-          }, this)
-    
-          if (Number.isInteger(index)) {
-            target.splice(index, 1)
-          }
-          else {
-            const tabRef = this.$refs[field]
-            if (tabRef) {
-              const selection = tabRef.selection
-              if (selection && Array.isArray(selection) && selection.length > 0) {
-                //console.log(tabRef, selection)
-                
-                selection.forEach(sel => {
-                  const idx = target.indexOf(sel);
-                  if (idx > -1) {
-                    target.splice(idx, 1)
-                  }
-                })
-              }
-              else {
-                this.$message.error('请选择一条记录')
-              }
-            }
-          }
-        },`,
-        customBtnClick: `customBtnClick(refKey, data, index) {
-          if(this.FormScript && this.FormScript.customBtnClick){
-            this.FormScript.customBtnClick(refKey, data, index)
-          }
-        },`
-      }
-    }
-
-  const methods = minxins[type]
-  if (methods) {
-    Object.keys(methods).forEach(key => {
-      list.push(methods[key])
-    })
-  }
-
-  return list
-}
-
 function buildProps(scheme, propsList) {
   const str = `${scheme.__vModel__}Props: ${JSON.stringify(scheme.props.props)},`
   propsList.push(str)
-}
-
-// el-upload的BeforeUpload
-function buildBeforeUpload(scheme) {
-  const config = scheme.__config__
-  const unitNum = units[config.sizeUnit];
-  let rightSizeCode = '';
-  let acceptCode = '';
-  const
-    returnList = []
-  if (config.fileSize) {
-    rightSizeCode = `let isRightSize = file.size / ${unitNum} < ${config.fileSize}
-    if(!isRightSize){
-      this.$message.error('文件大小超过 ${config.fileSize}${config.sizeUnit}')
-    }`
-    returnList.push('isRightSize')
-  }
-  if (scheme.accept) {
-    acceptCode = `let isAccept = new RegExp('${scheme.accept}').test(file.type)
-    if(!isAccept){
-      this.$message.error('应该选择${scheme.accept}类型的文件')
-    }`
-    returnList.push('isAccept')
-  }
-  const str = `${scheme.__vModel__}BeforeUpload(file) {
-    ${rightSizeCode}
-    ${acceptCode}
-    return ${returnList.join('&&')}
-  },`
-  return returnList.length ? str : ''
-}
-
-// el-upload的submit
-function buildSubmitUpload(scheme) {
-  const str = `submitUpload() {
-    this.$refs['${scheme.__vModel__}'].submit()
-  },`
-  return str
-}
-
-function buildOptionMethod(methodName, model, methodList) {
-  const str = `${methodName}() {
-    // TODO 发起请求获取数据
-    this.${model}
-  },`
-  methodList.push(str)
 }
 
 // js整体拼接
@@ -408,7 +212,7 @@ function buildexport(conf, type, data, subFormSchema, rules, selectOptions, uplo
         ${rules}
       },
       ${uploadVar}
-      ${selectOptions}
+      options: {${selectOptions}},
       ${props}
     }
   },
@@ -459,7 +263,7 @@ function mixinLoadFormScript(formConfig){
 
     return `
     installFormScript() {
-      this.${formConfig.script.trim()} 
+      this.${formConfig.script.trim()}
       this.FormScript.form = this
     },`
   }

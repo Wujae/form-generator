@@ -46,7 +46,7 @@ const property = {
 
 }
 
-function generator(scheme, globalConfig, someSpanIsNot24, generators) {
+function generator(scheme, globalConfig, someSpanIsNot24, path) {
 
   const config = scheme.__config__
 

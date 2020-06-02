@@ -15,7 +15,7 @@ const config = {
     label: '评分',
     tag: 'el-rate',
     tagIcon: 'rate',
-    defaultValue: '0',
+    defaultValue: null,
     span: 24,
     showLabel: true,
     labelWidth: null,

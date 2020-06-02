@@ -6,10 +6,11 @@ import {tags, colWrapper, UNDEFINED_GENERATOR} from "../base/ComponentGenratorHe
  * @param scheme
  * @param globalConfig
  * @param someSpanIsNot24
+ * @param path 字段路径数组
  * @param generators
  * @return {string|*}
  */
-export default function (scheme, globalConfig, someSpanIsNot24, generators) {
+export default function (scheme, globalConfig, someSpanIsNot24, path, generators) {
   const config = scheme.__config__
   const type = scheme.type === 'default' ? '' : `type="${scheme.type}"`
   const justify = scheme.type === 'default' ? '' : `justify="${scheme.justify}"`
@@ -21,7 +22,7 @@ export default function (scheme, globalConfig, someSpanIsNot24, generators) {
 
     if(generators && generators[el.__config__.idf]){
 
-      code = generators[el.__config__.idf](el, globalConfig, someSpanIsNot24, generators)
+      code = generators[el.__config__.idf](el, globalConfig, someSpanIsNot24, path, generators)
     }
 
     return code

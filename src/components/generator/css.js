@@ -5,6 +5,20 @@ const styles = {
     .layout-card {
       margin-bottom: 20px;
     }
+    .layout-card-header {
+      display: flex;
+      justify-content: space-between;
+      height:40px;
+    }
+    .layout-card-header-label {
+    
+    }
+    .index-symbol {
+    
+    }
+    .layout-card-header-button-group {
+    
+    }
   `,
   'el-tabs': `
     .layout-tabs {

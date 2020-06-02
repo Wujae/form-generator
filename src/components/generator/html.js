@@ -75,8 +75,10 @@ function buildFromBtns(scheme, type) {
  * @param {String} type 生成类型，文件或弹窗等
  */
 export function makeUpHtml(formConfig, type) {
-  const htmlList = []
+  const htmlList = [], path = []
   confGlobal = formConfig
+
+  path.push(formConfig.formModel)
   // 判断布局是否都沾满了24个栅格，以备后续简化代码结构
   someSpanIsNot24 = formConfig.fields.some(item => item.__config__.span !== 24)
   // 遍历渲染每个组件成html
@@ -87,7 +89,8 @@ export function makeUpHtml(formConfig, type) {
     if(generators && generators[el.__config__.idf]){
 
       console.log("using self generator here")
-      code = generators[el.__config__.idf](el, confGlobal, someSpanIsNot24, generators)
+
+      code = generators[el.__config__.idf](el, confGlobal, someSpanIsNot24, path, generators)
     } else {
       code = UNDEFINED_GENERATOR
     }
@@ -104,3 +107,5 @@ export function makeUpHtml(formConfig, type) {
   confGlobal = null
   return temp
 }
+
+

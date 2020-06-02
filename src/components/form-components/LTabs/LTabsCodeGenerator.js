@@ -5,12 +5,13 @@ import {colWrapper, classBuilder, UNDEFINED_GENERATOR} from "../base/ComponentGe
  * @param scheme
  * @param globalConfig
  * @param someSpanIsNot24
+ * @param path 字段路径数组
  * @param generators
  * @return {string|*}
  */
-export default function (scheme, globalConfig, someSpanIsNot24, generators) {
+export default function (scheme, globalConfig, someSpanIsNot24, path, generators) {
 
-  console.log('building el-tabs', scheme)
+  // console.log('building el-tabs', scheme)
 
   const config = scheme.__config__
   const type = scheme.type ? `type="${scheme.type}"` : ''
@@ -23,7 +24,7 @@ export default function (scheme, globalConfig, someSpanIsNot24, generators) {
     : `value="${scheme.children[0].value}"`
 
   const children = scheme.children.map(tab =>
-    buildElTabPanel(tab, globalConfig, someSpanIsNot24, generators)
+    buildElTabPanel(tab, globalConfig, someSpanIsNot24, path, generators)
   )
 
   let str = `<el-tabs ${type} ${activeName} ${tabPosition} ${stretch} ${clazz}>
@@ -34,12 +35,12 @@ export default function (scheme, globalConfig, someSpanIsNot24, generators) {
 }
 
 
-function buildElTabPanel(el, globalConfig, someSpanIsNot24, generators) {
+function buildElTabPanel(el, globalConfig, someSpanIsNot24, path, generators) {
   const label = el.label ? `label="${el.label}"` : ''
   const name = el.value ? `name="${el.value}"` : ''
   const disabled = el.disabled ? `disabled="${el.disabled}"` : ''
 
-  let child = buildElTabPaneChild(el, globalConfig, someSpanIsNot24, generators)
+  let child = buildElTabPaneChild(el, globalConfig, someSpanIsNot24, path, generators)
   if (child) child = `\n${child}\n` // 换行
 
   const type = el.type ? `type="${el.type}"` : ''
@@ -54,7 +55,7 @@ function buildElTabPanel(el, globalConfig, someSpanIsNot24, generators) {
   return `<el-tab-pane ${label} ${name} ${disabled}>${rowWrapper}</el-tab-pane>`
 }
 
-function buildElTabPaneChild(el, globalConfig, someSpanIsNot24, generators) {
+function buildElTabPaneChild(el, globalConfig, someSpanIsNot24, path, generators) {
 
   const children = el.children.map(paneEl => {
 
@@ -65,7 +66,7 @@ function buildElTabPaneChild(el, globalConfig, someSpanIsNot24, generators) {
 
     if (generators && generators[paneEl.__config__.idf]) {
 
-      code = generators[paneEl.__config__.idf](paneEl, globalConfig, someSpanIsNot24, generators)
+      code = generators[paneEl.__config__.idf](paneEl, globalConfig, someSpanIsNot24, path, generators)
     }
 
     return code

@@ -13,7 +13,7 @@
 
             <el-form-item v-if="formData.key !== 'add'" label="按钮位置" prop="position">
               <el-radio-group v-model="formData.position" size="small">
-                <el-radio-button v-for="posi in positions" :label="posi.label">{{posi.name}}</el-radio-button>
+                <el-radio-button v-for="posi in positions" :label="posi.label" :key="posi.label">{{posi.name}}</el-radio-button>
               </el-radio-group>
             </el-form-item>
 

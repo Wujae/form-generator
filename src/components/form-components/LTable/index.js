@@ -11,8 +11,7 @@ Vue.component(tableWrapper.name, tableWrapper)
 Vue.component(tableHeader.name, tableHeader)
 
 /**
- * TODO
- * 子表单组件 ***
+ * 表格组件 ***
  *
  */
 
@@ -21,10 +20,10 @@ const config = {
   // 组件的自定义配置
   __c_panel: 'LTableControlPanel',
   __config__: {
-    idf: 'f_table',
+    idf: 'l_table',
     layout: 'form',
     subForm: 'table', //子表单属性 'table'
-    label: '子表单',
+    label: '表格',
     tag: 'el-table',
     tagIcon: 'table',
     defaultValue: null,
@@ -87,8 +86,8 @@ function render(h, element, index, parent, container) {
 }
 
 export default {
-  idf: 'f_table',
-  describe: '子表单组件',
+  idf: 'l_table',
+  describe: '表格组件',
   type: 'layout',
   idx: 6,
   controlPanel: controlPanel,
