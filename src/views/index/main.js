@@ -5,6 +5,10 @@ import '@/styles/index.scss'
 import '@/icons'
 import Tinymce from '@/components/tinymce'
 
+//引入JETS组件
+import JetsFormComponent from 'jets-form-component'
+
+
 Vue.component('tinymce', Tinymce)
 
 Vue.config.productionTip = false

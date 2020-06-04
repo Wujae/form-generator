@@ -213,6 +213,7 @@ function buildexport(conf, type, data, subFormSchema, rules, selectOptions, uplo
       uploadAction: { ${uploadVar} },
       options: { ${selectOptions} },
       ${props}
+      toggle: {}
     }
   },
   computed: {},

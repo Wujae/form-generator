@@ -32,11 +32,16 @@ export default function (scheme, globalConfig, someSpanIsNot24, path, generators
 
   })
 
+  let row = `
+    <el-row ${type} ${justify} ${align} ${gutter}>
+      ${children.join('\\n')}
+    </el-row>`
+
+  row = collapseWrapper(scheme, row, pathS)
+
   let str = `
     ${buildHeader(scheme, globalConfig, pathS)}
-    <el-row ${type} ${justify} ${align} ${gutter}>
-      ${children.join('\n')}
-      </el-row>
+    ${row}
     `
 
   str = cardWrapper(scheme, str, globalConfig, pathS)
@@ -72,15 +77,50 @@ function buildHeader(scheme, globalConfig, path) {
   const config = scheme.__config__
   const uuid =  path.join('_')
 
+
   return `<div slot="header" class="layout-card-header">
     <span class="layout-card-header-label">
-      <el-badge :value="${uuid}_idx + 1" class="index-symbol" type="primary"></el-badge>
-      ${config.label}
+      ${buildBadge(scheme, uuid)} ${config.label} ${buildCollapse(scheme, uuid)}     
     </span>
     <el-button-group class="layout-card-header-button-group">
       ${buildHeaderButtons(scheme, globalConfig, path).join('\n')}
     </el-button-group>
   </div>`
+}
+
+function buildBadge(scheme, idf){
+
+  const config = scheme.__config__
+  let {showIndex} = scheme
+
+  return showIndex ? `<el-badge :value="${idf}_idx + 1" class="index-symbol" type="primary"></el-badge>` : ''
+}
+
+/**
+ * 建立折叠功能
+ */
+function buildCollapse(scheme, idf){
+
+  const { collapse } = scheme
+
+  if(collapse) return `<el-button type="text" icon="el-icon-arrow-down" @click="changeToggle(${idf})"></el-button>`
+
+  return ''
+}
+
+function collapseWrapper(scheme, str, path) {
+
+  const { collapse } = scheme
+
+  const uuid =  path.join('_')
+
+  if(collapse) return `<el-collapse-transition>
+            <div v-show="checkToggle(${uuid})">
+              ${str}
+            </div>
+          </el-collapse-transition>`
+
+  return str
 }
 
 /**

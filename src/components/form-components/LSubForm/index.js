@@ -1,5 +1,8 @@
 import draggable from 'vuedraggable'
 import generator from './LSubFormCodeGenerator'
+import formHeader from './FormHeader'
+
+Vue.component(formHeader.name, formHeader)
 
 /**
  * 子表单组件
@@ -22,7 +25,6 @@ const config = {
     showLabel: true,
     labelWidth: null,
     required: true,
-    regList: [],
     changeTag: true,
   },
   __slot__: {
@@ -37,7 +39,8 @@ const config = {
   children: [],
   'class': ['layout-card'],
   'header-class-name': ['layout-form-header-row'],
-  showIndex: false
+  showIndex: true,
+  collapse: false //允许展开/收起
 }
 
 //组件属性
@@ -59,13 +62,16 @@ function render(h, element, index, parent, container) {
       {child}
     </el-row>
   }
+
+
+
   return (
     <el-col span={config.span} class={className}
             nativeOnClick={event => {activeItem(element);event.stopPropagation()}}>
       <el-form-item label-width="0">
         <el-card >
           <div slot="header" className="clearfix">
-            <table-header class="layout-table-label" conf={element}/>
+            <form-header class="layout-table-label" conf={element}/>
           </div>
           <el-col>
             <el-row gutter={config.gutter} class='drawing-row-item '>

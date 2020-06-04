@@ -286,12 +286,7 @@
           </div>
         </draggable>
         <div style="margin-left: 20px;">
-          <el-button
-            style="padding-bottom: 0"
-            icon="el-icon-circle-plus-outline"
-            type="text"
-            @click="addSelectItem"
-          >
+          <el-button style="padding-bottom: 0" icon="el-icon-circle-plus-outline" type="text" @click="addSelectItem">
             添加选项
           </el-button>
         </div>
@@ -501,15 +496,17 @@
         </el-input>
       </el-form-item>
 
-      <template v-for="(item, index) in activeData.__config__.regList">
-        <validation-control :key="index" :item="item"
-                            @delete="activeData.__config__.regList.splice(index, 1)"></validation-control>
+      <template v-if="activeData.__config__.regList !== undefined">
+        <template v-for="(item, index) in activeData.__config__.regList">
+          <validation-control :key="index" :item="item"
+                              @delete="activeData.__config__.regList.splice(index, 1)"></validation-control>
+        </template>
+        <div style="margin-left: 20px">
+          <el-button icon="el-icon-circle-plus-outline" type="text" @click="addReg">
+            添加规则
+          </el-button>
+        </div>
       </template>
-      <div style="margin-left: 20px">
-        <el-button icon="el-icon-circle-plus-outline" type="text" @click="addReg">
-          添加规则
-        </el-button>
-      </div>
     </el-form>
     <treeNode-dialog :visible.sync="dialogVisible" title="添加选项" @commit="addNode"/>
     <icons-dialog :visible.sync="iconsVisible" :current="activeData[currentIconModel]" @select="setIcon"/>

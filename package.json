@@ -7,7 +7,8 @@
     "build:render": "vue-cli-service build --target lib --name form-gen-render --dest ./src/components/render/lib/ ./src/components/render/render.js",
     "build:parser": "vue-cli-service build --target lib --name form-gen-parser --dest ./src/components/parser/lib/ ./src/components/parser/index.js",
     "lint": "vue-cli-service lint",
-    "dev": "vue-cli-service serve"
+    "dev": "vue-cli-service serve",
+    "dev-local": "vue-cli-service serve --mode=local"
   },
   "dependencies": {
     "@babel/parser": "^7.7.4",
@@ -15,6 +16,7 @@
     "core-js": "^3.4.3",
     "file-saver": "^2.0.2",
     "formula": "^3.15.0",
+    "jets-form-component": "^1.0.3",
     "throttle-debounce": "^2.1.0",
     "vuedraggable": "^2.23.2"
   },

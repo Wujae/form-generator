@@ -24,6 +24,11 @@
         <el-switch v-model="activeData.showIndex"/>
       </el-form-item>
 
+      <el-form-item v-if="activeData.collapse !== undefined" label="面板折叠">
+        <el-switch v-model="activeData.collapse"/>
+      </el-form-item>
+
+
       <el-divider>按钮</el-divider>
       <draggable :list="activeData.__slot__.buttons" :animation="340" group="buttonItem" handle=".option-drag">
         <div v-for="(item, index) in activeData.__slot__.buttons" :key="index" class="button-item">

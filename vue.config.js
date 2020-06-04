@@ -1,6 +1,6 @@
 const path = require('path')
 
-const minify = process.env.NODE_ENV === 'development' ? false : {
+const minify = ['development', 'local'].includes(process.env.NODE_ENV) ? false : {
   collapseWhitespace: true,
   removeComments: true,
   removeRedundantAttributes: true,
@@ -16,9 +16,7 @@ function resolve(dir) {
 }
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/form-generator/'
-    : '/',
+  publicPath: process.env.APP_PATH,
   pages: {
     index: {
       entry: 'src/views/index/main.js',
@@ -36,7 +34,18 @@ module.exports = {
     }
   },
   devServer: {
-    overlay: false
+    overlay: false,
+    port: 2525,
+    proxy: {
+      '/api/': {
+        target: process.env.SERVER_URL,
+        ws: true,                                                   // proxy websockets
+        changeOrigin: true,                                         // needed for virtual hosted sites
+        pathRewrite: {
+          '^/api/': '/'
+        }
+      },
+    },
   },
   productionSourceMap: false,
   configureWebpack: {

@@ -53,6 +53,20 @@ const fileUploadMethod = {
         },`
 }
 
+const toggleMethod = {
+  checkToggle: `checkToggle(form) {
+    if(this.toggle[form.__ob__.dep.id] === undefined){
+      this.$set(this.toggle, form.__ob__.dep.id, true)
+    }
+     
+    return this.toggle[form.__ob__.dep.id]
+  },`,
+  changeToggle: `changeToggle(form) {
+    let curs = this.toggle[form.__ob__.dep.id]
+    this.$set(this.toggle, form.__ob__.dep.id, !curs)
+  },`,
+}
+
 /**
  * 表单基本方法 提交 清楚 验证等
  * @param {object} formConfig
@@ -154,8 +168,8 @@ const dialogMethod = (formConfig) => {
 export default function (type, confGlobal) {
   const list = [];
   const minxins = {
-    file: confGlobal.formBtns ? Object.assign({}, formBaseMethod(confGlobal), defaultMethod, fileUploadMethod, subFormMethod) : null,
-    dialog: Object.assign(dialogMethod(confGlobal), defaultMethod, fileUploadMethod, subFormMethod)
+    file: confGlobal.formBtns ? Object.assign({}, formBaseMethod(confGlobal), defaultMethod, fileUploadMethod, subFormMethod, toggleMethod) : null,
+    dialog: Object.assign(dialogMethod(confGlobal), defaultMethod, fileUploadMethod, subFormMethod, toggleMethod)
   }
 
   const methods = minxins[type]

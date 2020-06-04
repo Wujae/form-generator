@@ -4,6 +4,8 @@ node_modules
 /src/components/parser/lib
 /src/components/render/lib
 
+
+
 # local env files
 .env.local
 .env.*.local
@@ -21,5 +23,8 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+*.iml
 
 .prettierrc
+.svn/
+src/components/odbms/

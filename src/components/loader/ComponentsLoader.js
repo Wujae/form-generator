@@ -4,13 +4,13 @@
  *
  */
 
-const modulesFiles = require.context("@/components/form-components/", true, /index\.js$/);
-
-console.log("loading components");
-
 let componentDefinitions = [];
 
 try {
+
+  const modulesFiles = require.context("@/components/form-components/", true, /index\.js$/);
+
+  console.log("loading components");
 
   modulesFiles.keys().forEach(jsFile => {
     componentDefinitions = componentDefinitions.concat(modulesFiles(jsFile).default)
@@ -20,6 +20,22 @@ try {
 
   console.error('加载组件异常' ,e)
 }
+
+try {
+
+  const odbmsModules = require.context("@/components/odbms/", true, /index\.js$/);
+
+  console.log("loading odbms components");
+
+  odbmsModules.keys().forEach(jsFile => {
+    componentDefinitions = componentDefinitions.concat(odbmsModules(jsFile).default)
+  });
+
+} catch (e) {
+
+  console.error('ODBMS加载组件异常' ,e)
+}
+
 
 /**
  * 组件浏览器大类定义
@@ -31,6 +47,7 @@ const SECTIONS = [
   {code: 'input', name: '输入型组件', list: []},
   {code: 'select', name: '选择型组件', list: []},
   {code: 'layout', name: '布局型组件', list: []},
+  {code: 'odbms', name: 'ODBMS组件', list: []},
 ]
 
 
