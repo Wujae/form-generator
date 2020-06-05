@@ -3,6 +3,7 @@ import componentsLoader from '@/components/loader/ComponentsLoader'
 // 表单属性【右面板】
 export const formConf = {
   formRef: 'elForm',
+  formName: null,
   formModel: 'formData',
   size: 'medium',
   labelPosition: 'right',

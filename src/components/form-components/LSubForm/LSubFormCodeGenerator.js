@@ -34,7 +34,7 @@ export default function (scheme, globalConfig, someSpanIsNot24, path, generators
 
   let row = `
     <el-row ${type} ${justify} ${align} ${gutter}>
-      ${children.join('\\n')}
+      ${children.join('\n')}
     </el-row>`
 
   row = collapseWrapper(scheme, row, pathS)

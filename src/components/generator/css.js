@@ -1,4 +1,5 @@
 const styles = {
+  'default': '.form-name > span {font-weight: bolder;}',
   'el-rate': '.el-rate{display: inline-block; vertical-align: text-top;}',
   'el-upload': '.el-upload__tip{line-height: 1.2;}',
   'el-card': `
@@ -72,5 +73,8 @@ function addCss(cssList, el) {
 export function makeUpCss(conf) {
   const cssList = []
   conf.fields.forEach(el => addCss(cssList, el))
+
+  cssList.push(styles['default'])
+
   return cssList.join('\n')
 }

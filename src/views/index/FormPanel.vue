@@ -2,6 +2,9 @@
   <div>
     <!-- 表单属性 -->
     <el-form size="small" label-width="90px">
+      <el-form-item label="表单标题">
+        <el-input v-model="formConf.formName" placeholder="请输入表单标题"/>
+      </el-form-item>
       <el-form-item label="表单名">
         <el-input v-model="formConf.formRef" placeholder="请输入表单名（ref）"/>
       </el-form-item>

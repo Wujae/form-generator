@@ -68,6 +68,10 @@
             :disabled="formConf.disabled"
             :label-width="formConf.labelWidth + 'px'"
           >
+            <div v-if="formConf.formName" class="form-name">
+              <span>{{formConf.formName}}</span>
+              <el-divider></el-divider>
+            </div>
             <draggable class="drawing-board" :list="drawingList" :animation="340" group="componentsGroup">
               <draggable-item
                 v-for="(element, index) in drawingList"
@@ -422,5 +426,11 @@ export default {
 </script>
 
 <style lang='scss'>
-@import '@/styles/home';
+  @import '@/styles/home';
+
+  .form-name {
+    & > span {
+      font-weight: bolder;
+    }
+  }
 </style>

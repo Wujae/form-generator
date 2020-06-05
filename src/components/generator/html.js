@@ -42,6 +42,7 @@ function buildFormTemplate(scheme, child, type) {
   }
   const disabled = scheme.disabled ? `:disabled="${scheme.disabled}"` : ''
   let str = `<el-form ref="${scheme.formRef}" :model="${scheme.formModel}" :rules="${scheme.formRules}" size="${scheme.size}" ${disabled} label-width="${scheme.labelWidth}px" ${labelPosition}>
+      ${buildFormName(scheme)}
       ${child}
       ${buildFromBtns(scheme, type)}
     </el-form>`
@@ -50,6 +51,19 @@ function buildFormTemplate(scheme, child, type) {
         ${str}
       </el-row>`
   }
+  return str
+}
+
+function buildFormName(scheme){
+  let str = ''
+
+  if(scheme.formName){
+   str = `<div class="form-name">
+      <span>${scheme.formName}</span>
+      <el-divider></el-divider>
+    </div>`
+  }
+
   return str
 }
 
